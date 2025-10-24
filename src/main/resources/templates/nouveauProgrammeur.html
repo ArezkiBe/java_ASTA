@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>ALTN72 - TP Fil Rouge - Nouveau programmeur</title>
@@ -7,6 +7,7 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
 </head>
 <body>
+<div th:insert="fragments/header :: header"></div>
 <div class="container">
     <h1>Ajout Nouveau Programmeur</h1>
     <form th:action="@{/tpfilrouge/ajouterProgrammeur}" th:object="${nouveauProgrammeur}" method="POST">

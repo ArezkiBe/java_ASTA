@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- header fragment -->
+<div th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/}">ALTN72 - TP Fil Rouge</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item" th:if="${#request.remoteUser != null}">
+                        <span class="nav-link">Bonjour <span th:text="${#request.remoteUser}">Utilisateur</span> |</span>
+                    </li>
+                    <li class="nav-item" th:if="${#request.remoteUser != null}">
+                        <a class="nav-link" th:href="@{/perform_logout}">Déconnectez-vous</a>
+                    </li>
+                    <li class="nav-item" th:if="${#request.remoteUser == null}">
+                        <a class="nav-link" th:href="@{/login}">Se connecter</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+</body>
+</html>
