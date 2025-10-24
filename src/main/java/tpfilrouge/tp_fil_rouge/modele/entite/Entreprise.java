@@ -24,6 +24,9 @@ public class Entreprise {
     @Column(name = "adresse", length = 500)
     private String adresse;
 
+    @Column(name = "informations_utiles_acces_locaux", length = 200)
+    private String informationsUtilesAccesLocaux;
+
     @OneToMany(mappedBy = "entreprise", fetch = FetchType.LAZY)
     private List<Apprenti> apprentis;
 

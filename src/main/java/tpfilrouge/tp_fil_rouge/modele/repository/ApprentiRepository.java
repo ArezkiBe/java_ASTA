@@ -20,4 +20,6 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
     
     @Query(value = "SELECT COUNT(*) FROM apprenti WHERE est_archive = 0", nativeQuery = true)
     Long countApprentisCourantsSQL();
+
+    List<Apprenti> findByAnneeAcademique(tpfilrouge.tp_fil_rouge.modele.entite.AnneeAcademique anneeAcademique);
 }

@@ -49,6 +49,25 @@ public class Apprenti {
     @JoinColumn(name = "annee_academique_id", nullable = false)
     private AnneeAcademique anneeAcademique;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "maitre_apprentissage_id")
+    private MaitreApprentissage maitreApprentissage;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mission_id")
+    private Mission mission;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "apprenti_id")
+    private java.util.List<Visite> visites;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "apprenti_id")
+    private java.util.List<Evaluation> evaluations;
+
+    @Column(name = "feedback_tuteur_enseignant", length = 500)
+    private String feedbackTuteurEnseignant;
+
     public String getNomComplet() {
         return prenom + " " + nom;
     }
