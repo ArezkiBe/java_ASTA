@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Réinitialiser le mot de passe</title>
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container">
+    <h1>Réinitialiser le mot de passe</h1>
+    <p th:if="${error}" th:text="${error}" style="color:red"></p>
+    <p th:if="${message}" th:text="${message}" style="color:green"></p>
+
+    <form th:action="@{/reset-password}" method="post" th:if="${token}">
+        <input type="hidden" name="token" th:value="${token}" />
+        <div>
+            <label>Nouveau mot de passe</label>
+            <input type="password" name="password" />
+        </div>
+        <div>
+            <button type="submit">Réinitialiser</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+

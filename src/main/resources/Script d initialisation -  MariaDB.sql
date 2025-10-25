@@ -83,3 +83,32 @@ CREATE TABLE evaluation (
     apprenti_id INT,
     FOREIGN KEY (apprenti_id) REFERENCES apprenti(id)
 );
+
+-- Table utilisateur : stocke les identifiants pour l'authentification
+CREATE TABLE IF NOT EXISTS utilisateur (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    roles VARCHAR(255), -- ex: 'ROLE_USER,ROLE_ADMIN'
+    prenom VARCHAR(100),
+    actif TINYINT(1) DEFAULT 1,
+    must_change_password TINYINT(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Exemple d'insertion (commenté) :
+-- Remplacer LE_HASH_BCRYPT par un hash BCrypt généré côté application ou via un outil.
+-- INSERT INTO utilisateur (username, password, roles, prenom, actif, must_change_password) VALUES
+-- ('admin', 'LE_HASH_BCRYPT', 'ROLE_ADMIN,ROLE_USER', 'Admin', 1, 1);
+
+-- Table password_reset_token : stocke les tokens de réinitialisation
+CREATE TABLE IF NOT EXISTS password_reset_token (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    utilisateur_id BIGINT NOT NULL,
+    expiry_date DATETIME NOT NULL,
+    CONSTRAINT fk_prt_user FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Exemple d'insertion commentée (à utiliser uniquement pour tests ; le token doit être généré côté application):
+-- INSERT INTO password_reset_token (token, utilisateur_id, expiry_date) VALUES
+-- ('UUID_TOKEN_EXEMPLE', 1, DATE_ADD(NOW(), INTERVAL 2 HOUR));
