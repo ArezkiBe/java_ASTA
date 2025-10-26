@@ -29,7 +29,7 @@ public class ApprentiService {
 
     public Apprenti getApprentiById(Integer id) {
         return apprentiRepository.findById(id)
-            .orElseThrow(() -> new ApprentiNonTrouveException("Apprenti non trouvé"));
+            .orElseThrow(() -> new ApprentiNonTrouveException(id));
     }
 
     public List<Apprenti> getAllApprentis() {
