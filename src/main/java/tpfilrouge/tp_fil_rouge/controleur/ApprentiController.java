@@ -179,4 +179,38 @@ public class ApprentiController {
             .toList();
         return ResponseEntity.ok(apprentis);
     }
+
+    // Endpoints de recherche (Exigence 7)
+    @GetMapping("/recherche/nom")
+    public ResponseEntity<List<Apprenti>> rechercherParNom(@RequestParam String q) {
+        return ResponseEntity.ok(apprentiService.rechercherParNom(q));
+    }
+
+    @GetMapping("/recherche/entreprise/{id}")
+    public ResponseEntity<List<Apprenti>> rechercherParEntreprise(@PathVariable Integer id) {
+        return ResponseEntity.ok(apprentiService.rechercherParEntreprise(id));
+    }
+
+    @GetMapping("/recherche/annee")
+    public ResponseEntity<List<Apprenti>> rechercherParAnnee(@RequestParam String annee) {
+        return ResponseEntity.ok(apprentiService.rechercherParAnnee(annee));
+    }
+
+    @GetMapping("/recherche/mission")
+    public ResponseEntity<List<Apprenti>> rechercherParMission(@RequestParam String motCle) {
+        return ResponseEntity.ok(apprentiService.rechercherParMission(motCle));
+    }
+
+    @Operation(
+        summary = "Récupérer les apprentis archivés",
+        description = "Retourne la liste des apprentis archivés - Exigence 6.3"
+    )
+    @GetMapping("/archives")
+    public ResponseEntity<List<Apprenti>> getApprentiArchives() {
+        List<Apprenti> apprentisArchives = apprentiService.getAllApprentis()
+            .stream()
+            .filter(Apprenti::getEstArchive)
+            .toList();
+        return ResponseEntity.ok(apprentisArchives);
+    }
 }

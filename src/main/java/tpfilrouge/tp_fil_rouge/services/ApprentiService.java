@@ -124,5 +124,22 @@ public class ApprentiService {
 
         promouvoirEtArchiverApprentisNouvelleAnnee(anneeCourante.getId());
     }
+
+    // Méthodes de recherche (Exigence 7)
+    public List<Apprenti> rechercherParNom(String nom) {
+        return apprentiRepository.findByNomContainingIgnoreCaseAndEstArchiveFalse(nom);
+    }
+
+    public List<Apprenti> rechercherParEntreprise(Integer entrepriseId) {
+        return apprentiRepository.findByEntrepriseIdAndEstArchiveFalse(entrepriseId);
+    }
+
+    public List<Apprenti> rechercherParAnnee(String annee) {
+        return apprentiRepository.findByAnneeAcademiqueAnneeAndEstArchiveFalse(annee);
+    }
+
+    public List<Apprenti> rechercherParMission(String motCle) {
+        return apprentiRepository.findByMissionMotsClesContainingAndEstArchiveFalse(motCle);
+    }
 }
 

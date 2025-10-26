@@ -79,4 +79,15 @@ public class AnneeAcademiqueController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // Gestion des années (Exigence 6)
+    @PostMapping("/creer")
+    public ResponseEntity<AnneeAcademique> creerNouvelleAnnee(@RequestParam String annee) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(anneeAcademiqueService.creerNouvelleAnnee(annee));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

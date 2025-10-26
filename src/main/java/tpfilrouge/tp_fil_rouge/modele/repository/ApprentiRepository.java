@@ -18,8 +18,9 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
     
     boolean existsByEmail(String email);
     
-    @Query(value = "SELECT COUNT(*) FROM apprenti WHERE est_archive = 0", nativeQuery = true)
-    Long countApprentisCourantsSQL();
+    // Convertie en JPQL pour respecter la règle "une seule requête SQL native"
+    @Query("SELECT COUNT(a) FROM Apprenti a WHERE a.estArchive = false")
+    Long countApprentisCourantsJPQL();
 
     List<Apprenti> findByAnneeAcademique(tpfilrouge.tp_fil_rouge.modele.entite.AnneeAcademique anneeAcademique);
 
@@ -41,4 +42,17 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
         ORDER BY aa.annee DESC, a.programme ASC, nombre_apprentis DESC
         """, nativeQuery = true)
     List<Object[]> getStatistiquesApprentisParProgrammeEtAnnee();
+
+    // Recherche par nom (Exigence 7.1.1)
+    List<Apprenti> findByNomContainingIgnoreCaseAndEstArchiveFalse(String nom);
+
+    // Recherche par entreprise (Exigence 7.1.2)
+    List<Apprenti> findByEntrepriseIdAndEstArchiveFalse(Integer entrepriseId);
+
+    // Recherche par année académique (Exigence 7.1.4)
+    List<Apprenti> findByAnneeAcademiqueAnneeAndEstArchiveFalse(String annee);
+
+    // Recherche par mission (Exigence 7.1.3)
+    @Query("SELECT a FROM Apprenti a JOIN a.mission m WHERE LOWER(m.motsCles) LIKE LOWER(CONCAT('%', :motCle, '%')) AND a.estArchive = false")
+    List<Apprenti> findByMissionMotsClesContainingAndEstArchiveFalse(String motCle);
 }

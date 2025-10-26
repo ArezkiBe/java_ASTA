@@ -65,5 +65,24 @@ public class AnneeAcademiqueService {
 
         return anneeAcademiqueRepository.save(nouvelleAnnee);
     }
+
+    // Gestion des années académiques (Exigence 6)
+    
+    /** 
+     * @Transactional justifiée : Cette méthode effectue 2 opérations qui doivent être atomiques :
+     * 1. Vérification d'existence (SELECT)
+     * 2. Création de l'année (INSERT)
+     * En cas d'erreur entre les 2, tout doit être annulé pour éviter les incohérences.
+     */
+    @Transactional
+    public AnneeAcademique creerNouvelleAnnee(String annee) {
+        if (anneeAcademiqueRepository.existsByAnnee(annee)) {
+            throw new RuntimeException("L'année " + annee + " existe déjà");
+        }
+        AnneeAcademique nouvelleAnnee = new AnneeAcademique();
+        nouvelleAnnee.setAnnee(annee);
+        nouvelleAnnee.setEstCourante(false);
+        return anneeAcademiqueRepository.save(nouvelleAnnee);
+    }
 }
 
