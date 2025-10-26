@@ -21,9 +21,8 @@ public class DataInitializer {
                 admin.setRoles("ROLE_ADMIN,ROLE_USER");
                 admin.setPrenom("SuperAdmin");
                 admin.setActif(true);
-                admin.setMustChangePassword(true);
                 utilisateurRepository.save(admin);
-                System.out.println("Utilisateur admin créé en base (admin/admin) avec mustChangePassword=true");
+                System.out.println("Utilisateur admin créé en base (admin/admin)");
             }
         };
     }

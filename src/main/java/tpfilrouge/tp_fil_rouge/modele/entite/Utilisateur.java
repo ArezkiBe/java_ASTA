@@ -21,8 +21,6 @@ public class Utilisateur {
 
     private boolean actif = true;
 
-    private boolean mustChangePassword = false;
-
     // getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -36,7 +34,5 @@ public class Utilisateur {
     public void setPrenom(String prenom) { this.prenom = prenom; }
     public boolean isActif() { return actif; }
     public void setActif(boolean actif) { this.actif = actif; }
-    public boolean isMustChangePassword() { return mustChangePassword; }
-    public void setMustChangePassword(boolean mustChangePassword) { this.mustChangePassword = mustChangePassword; }
 }
 
