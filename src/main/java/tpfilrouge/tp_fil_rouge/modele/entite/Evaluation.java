@@ -30,5 +30,32 @@ public class Evaluation {
 
     @Column(name = "commentaires", length = 500)
     private String commentaires;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "apprenti_id")
+    private Apprenti apprenti;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Evaluation evaluation = (Evaluation) obj;
+        return id != null && id.equals(evaluation.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Evaluation{" +
+                "id=" + id +
+                ", type='" + type + '\'' +
+                ", themeSujet='" + themeSujet + '\'' +
+                ", noteFinale=" + noteFinale +
+                '}';
+    }
 }
 

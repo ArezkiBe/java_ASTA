@@ -2,51 +2,156 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Accueil</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - ASTA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/app.css}" rel="stylesheet">
 </head>
-<body>
-    <!-- 1.3 - Affichage en haut à droite : Bonjour [Prénom] | Déconnectez-vous -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">TP Fil Rouge</a>
-            <div class="navbar-nav ms-auto" th:if="${prenom}">
-                <span class="navbar-text me-3">
-                    Bonjour <span th:text="${prenom}"></span>
-                </span>
-                <span class="navbar-text me-2">|</span>
-                <!-- 1.4 - Lien de déconnexion -->
-                <a class="nav-link" href="/logout">Déconnectez-vous</a>
-            </div>
+<body class="bg-light">
+    
+    <!-- Navigation unifiée -->
+    <div th:replace="~{fragments/header :: navbar('home')}"></div>
+    
+    <!-- Contenu principal avec marges cohérentes -->
+    <main class="main-content">
+        <!-- Messages flash -->
+        <div class="container">
+            <div th:replace="~{fragments/messages :: all}"></div>
         </div>
-    </nav>
 
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-12">
-                <h1>Bienvenue dans l'application</h1>
-                <p class="lead">Vous êtes connecté avec succès.</p>
-
-                <div class="mt-4">
-                    <h3>Menu principal</h3>
-                    <div class="list-group">
-                        <a href="#" class="list-group-item list-group-item-action">
-                            Gestion des apprentis
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            Gestion des entreprises
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            Gestion des évaluations
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            Gestion des visites
-                        </a>
+        <div class="container">
+            <!-- Hero Section -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="hero-section text-center py-5">
+                        <h1 class="display-4 fw-light mb-3">Tableau de Bord</h1>
+                        <p class="lead text-muted mb-0">Gestion de l'apprentissage EFREI</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Navigation Cards -->
+            <div class="row dashboard-grid justify-content-center">
+                <!-- Apprentis -->
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <a href="/web/apprentis" class="text-decoration-none">
+                        <div class="card dashboard-card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="dashboard-icon mx-auto">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h5 class="card-title fw-semibold mb-2">Apprentis</h5>
+                                <p class="card-text text-muted small mb-0">Gestion des étudiants</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Maîtres -->
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <a href="/web/maitres" class="text-decoration-none">
+                        <div class="card dashboard-card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="dashboard-icon mx-auto">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                                <h5 class="card-title fw-semibold mb-2">Maîtres</h5>
+                                <p class="card-text text-muted small mb-0">Encadrants entreprise</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Évaluations -->
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <a href="/web/evaluations" class="text-decoration-none">
+                        <div class="card dashboard-card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="dashboard-icon mx-auto">
+                                    <i class="fas fa-clipboard-check"></i>
+                                </div>
+                                <h5 class="card-title fw-semibold mb-2">Évaluations</h5>
+                                <p class="card-text text-muted small mb-0">Suivi des notes</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Visites -->
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <a href="/web/visites" class="text-decoration-none">
+                        <div class="card dashboard-card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="dashboard-icon mx-auto">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <h5 class="card-title fw-semibold mb-2">Visites</h5>
+                                <p class="card-text text-muted small mb-0">Visites entreprise</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Section Années académiques -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="card-title fw-semibold mb-2">
+                                        <i class="fas fa-calendar-alt text-secondary me-2"></i>
+                                        Années Académiques
+                                    </h5>
+                                    <p class="card-text text-muted mb-0">Gestion des périodes académiques et progression des apprentis</p>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <a href="/web/annees" class="btn btn-outline-secondary">
+                                        <i class="fas fa-cog me-1"></i>Gérer
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+            <!-- Recherche -->
+            <div class="col-lg-4 col-md-6">
+                <a href="/web/recherche" class="text-decoration-none">
+                    <div class="card h-100 fade-in" style="animation-delay: 0.3s">
+                        <div class="card-body p-4 text-center">
+                            <div class="icon-badge mx-auto mb-3">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h5 class="card-title">Recherche</h5>
+                            <p class="text-muted">Trouver un apprenti</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Évaluations -->
+            <div class="col-lg-4 col-md-6">
+                <a href="/web/evaluations" class="text-decoration-none">
+                    <div class="card h-100 fade-in" style="animation-delay: 0.4s">
+                        <div class="card-body p-4 text-center">
+                            <div class="icon-badge mx-auto mb-3">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <h5 class="card-title">Évaluations</h5>
+                            <p class="text-muted">Suivi des compétences</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Visites -->
         </div>
-    </div>
+    </main>
+    
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 

@@ -45,4 +45,8 @@ public class TuteurEnseignantService {
     public void deleteTuteur(Integer id) {
         tuteurEnseignantRepository.deleteById(id);
     }
+
+    public Optional<TuteurEnseignant> getTuteurByLogin(String login) {
+        return tuteurEnseignantRepository.findByLogin(login);
+    }
 }

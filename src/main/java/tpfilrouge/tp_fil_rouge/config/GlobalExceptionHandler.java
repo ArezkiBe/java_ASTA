@@ -1,7 +1,5 @@
 package tpfilrouge.tp_fil_rouge.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,7 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import tpfilrouge.tp_fil_rouge.exceptions.ApprentiNonTrouveException;
 import tpfilrouge.tp_fil_rouge.exceptions.AuthentificationException;
-import tpfilrouge.tp_fil_rouge.exceptions.ProgrammeurNonTrouveException;
 import tpfilrouge.tp_fil_rouge.exceptions.ValidationException;
 
 import java.time.LocalDateTime;
@@ -29,9 +26,6 @@ import java.util.Map;
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
     /**
      * ÉTAPE 1 - Gestion des exceptions spécifiques métier
      * Catché en priorité selon les consignes Clean Code
@@ -39,27 +33,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApprentiNonTrouveException.class)
     public ResponseEntity<Map<String, Object>> handleApprentiNonTrouve(
             ApprentiNonTrouveException ex, WebRequest request) {
-
-        logger.warn("Apprenti non trouvé : {}", ex.getMessage());
-
         Map<String, Object> errorResponse = createErrorResponse(
             "Apprenti introuvable",
-            ex.getMessage(),
-            HttpStatus.NOT_FOUND,
-            request
-        );
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-    }
-
-    @ExceptionHandler(ProgrammeurNonTrouveException.class)
-    public ResponseEntity<Map<String, Object>> handleProgrammeurNonTrouve(
-            ProgrammeurNonTrouveException ex, WebRequest request) {
-
-        logger.warn("Programmeur non trouvé : {}", ex.getMessage());
-
-        Map<String, Object> errorResponse = createErrorResponse(
-            "Programmeur introuvable",
             ex.getMessage(),
             HttpStatus.NOT_FOUND,
             request
@@ -71,9 +46,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthentificationException.class)
     public ResponseEntity<Map<String, Object>> handleAuthentification(
             AuthentificationException ex, WebRequest request) {
-
-        logger.warn("Erreur d'authentification : {}", ex.getMessage());
-
         Map<String, Object> errorResponse = createErrorResponse(
             "Accès non autorisé",
             "Vos informations de connexion sont invalides ou vous n'avez pas les droits nécessaires",
@@ -91,9 +63,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(
             MethodArgumentNotValidException ex, WebRequest request) {
-
-        logger.warn("Erreur de validation des données : {}", ex.getMessage());
-
         Map<String, Object> errorResponse = createErrorResponse(
             "Données invalides",
             "Les informations saisies ne respectent pas les contraintes requises",
@@ -124,9 +93,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<Map<String, Object>> handleValidationMetier(
             ValidationException ex, WebRequest request) {
-
-        logger.warn("Erreur de validation métier : {}", ex.getMessage());
-
         Map<String, Object> errorResponse = createErrorResponse(
             "Règle métier non respectée",
             ex.getMessage(),
@@ -143,9 +109,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(
             org.springframework.dao.DataIntegrityViolationException ex, WebRequest request) {
-
-        logger.error("Violation de contrainte de base de données", ex);
-
         Map<String, Object> errorResponse = createErrorResponse(
             "Erreur de cohérence des données",
             "Cette opération viole une contrainte de base de données (doublons, références manquantes...)",
@@ -157,6 +120,38 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Gestion des erreurs de ressources statiques (favicon, outils dev Chrome, etc.)
+     */
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNoResourceFound(
+            org.springframework.web.servlet.resource.NoResourceFoundException ex, WebRequest request) {
+
+        String resourcePath = ex.getResourcePath();
+        
+        // Filtrer les requêtes des outils de développement et autres ressources non critiques
+        if (resourcePath != null && (
+            resourcePath.contains(".well-known") ||
+            resourcePath.contains("favicon.ico") ||
+            resourcePath.contains("apple-touch-icon") ||
+            resourcePath.contains("manifest.json"))) {
+            
+            // Log en niveau DEBUG seulement pour ne pas polluer les logs            
+            // Retourner 404 silencieusement sans créer d'erreur visible
+            return ResponseEntity.notFound().build();
+        }
+
+        // Pour les autres ressources, logger normalement
+        Map<String, Object> errorResponse = createErrorResponse(
+            "Ressource non trouvée",
+            "La ressource demandée n'existe pas : " + resourcePath,
+            HttpStatus.NOT_FOUND,
+            request
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    /**
      * ÉTAPE 4 - Gestion générale des exceptions
      * En dernier recours selon les consignes Clean Code
      */
@@ -165,8 +160,6 @@ public class GlobalExceptionHandler {
             Exception ex, WebRequest request) {
 
         // Framework de logging au lieu de printStackTrace()
-        logger.error("Erreur inattendue dans l'application", ex);
-
         Map<String, Object> errorResponse = createErrorResponse(
             "Erreur interne du serveur",
             "Une erreur technique inattendue s'est produite. L'équipe technique a été notifiée.",

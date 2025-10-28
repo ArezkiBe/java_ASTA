@@ -15,6 +15,8 @@ public interface AnneeAcademiqueRepository extends JpaRepository<AnneeAcademique
     
     boolean existsByAnnee(String annee);
     
+    Optional<AnneeAcademique> findByAnnee(String annee);
+    
     @Modifying
     @Query("UPDATE AnneeAcademique a SET a.estCourante = false WHERE a.estCourante = true")
     void desactiverToutesAnneesCourantes();

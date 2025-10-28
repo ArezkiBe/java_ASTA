@@ -1,0 +1,35 @@
+<!-- Fragment pour les messages flash -->
+<div xmlns:th="http://www.thymeleaf.org">
+    
+    <!-- Messages de succès -->
+    <div th:fragment="success" th:if="${message}" 
+         class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${message}">Message de succès</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    
+    <!-- Messages d'erreur -->
+    <div th:fragment="error" th:if="${erreur}" 
+         class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <span th:text="${erreur}">Message d'erreur</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    
+    <!-- Messages d'information -->
+    <div th:fragment="info" th:if="${info}" 
+         class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="fas fa-info-circle me-2"></i>
+        <span th:text="${info}">Message d'information</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    
+    <!-- Fragment combiné pour tous les messages -->
+    <div th:fragment="all">
+        <div th:replace="~{fragments/messages :: success}"></div>
+        <div th:replace="~{fragments/messages :: error}"></div>
+        <div th:replace="~{fragments/messages :: info}"></div>
+    </div>
+    
+</div>

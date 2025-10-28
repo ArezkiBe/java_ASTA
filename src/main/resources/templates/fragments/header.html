@@ -1,52 +1,108 @@
-<!-- header fragment -->
-<div th:fragment="header" xmlns:th="http://www.thymeleaf.org">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
-        <div class="container-fluid">
-            <a class="navbar-brand" th:href="@{/}">ALTN72 - TP Fil Rouge</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    <!-- Affiche le username s'il est présent dans le modèle (currentUsername) -->
-                    <li class="nav-item" th:if="${currentUsername != null}">
-                        <span class="nav-link">Bonjour <span th:text="${currentUsername}">Utilisateur</span> |</span>
-                    </li>
-
-                    <!-- Logout via POST pour respecter CSRF -- affiché si user connecté -->
-                    <li class="nav-item" th:if="${currentUsername != null}">
-                        <form th:action="@{/perform_logout}" method="post" style="display:inline;">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <button type="submit" class="nav-link btn btn-link" style="padding:0;">Déconnectez-vous</button>
-                        </form>
-                    </li>
-
-                    <!-- Lien de connexion affiché si aucune session utilisateur -->
-                    <li class="nav-item" th:if="${currentUsername == null}">
-                        <a class="nav-link" th:href="@{/login}">Se connecter</a>
-                    </li>
-                </ul>
+<!-- Navigation professionnelle -->
+<nav th:fragment="navbar(currentPage)" class="navbar navbar-expand-lg" xmlns:th="http://www.thymeleaf.org">
+    <div class="container-fluid">
+        <!-- Brand élégant -->
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                     style="width: 40px; height: 40px;">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <div class="fw-bold">ASTA</div>
+                    <small class="text-muted d-none d-md-block">Apprentissage & Suivi</small>
+                </div>
             </div>
+        </a>
+        
+        <!-- Bouton mobile épuré -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Navigation moderne -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Menu principal -->
+            <ul class="navbar-nav me-auto" th:if="${session.SPRING_SECURITY_CONTEXT?.authentication?.authenticated}">
+                <li class="nav-item">
+                    <a class="nav-link" 
+                       th:href="@{/web/apprentis}"
+                       th:classappend="${currentPage == 'apprentis'} ? 'active' : ''">
+                        <i class="fas fa-users me-2"></i>Apprentis
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" 
+                       th:href="@{/web/maitres}"
+                       th:classappend="${currentPage == 'maitres'} ? 'active' : ''">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>Maîtres
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" 
+                       th:href="@{/web/annees}"
+                       th:classappend="${currentPage == 'annees'} ? 'active' : ''">
+                        <i class="fas fa-calendar-alt me-2"></i>Années
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" 
+                       th:href="@{/web/evaluations}"
+                       th:classappend="${currentPage == 'evaluations'} ? 'active' : ''">
+                        <i class="fas fa-clipboard-check me-2"></i>Évaluations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" 
+                       th:href="@{/web/visites}"
+                       th:classappend="${currentPage == 'visites'} ? 'active' : ''">
+                        <i class="fas fa-map-marker-alt me-1"></i>Visites
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" 
+                       th:href="@{/web/recherche}"
+                       th:classappend="${currentPage == 'recherche'} ? 'active fw-bold' : ''">
+                        <i class="fas fa-search me-1"></i>Recherche
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- Menu utilisateur (droite) -->
+            <ul class="navbar-nav">
+                <!-- Si utilisateur connecté -->
+                <li class="nav-item dropdown" th:if="${session.SPRING_SECURITY_CONTEXT?.authentication?.authenticated}">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" 
+                       id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <span th:text="${session.SPRING_SECURITY_CONTEXT.authentication.name}">Utilisateur</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <span class="dropdown-item-text text-muted small">
+                                Connecté en tant que<br>
+                                <strong th:text="${session.SPRING_SECURITY_CONTEXT.authentication.name}">utilisateur</strong>
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <button type="submit" class="dropdown-item">
+                                    <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                
+                <!-- Si utilisateur non connecté -->
+                <li class="nav-item" th:unless="${session.SPRING_SECURITY_CONTEXT?.authentication?.authenticated}">
+                    <a class="nav-link" th:href="@{/login}">
+                        <i class="fas fa-sign-in-alt me-1"></i>Se connecter
+                    </a>
+                </li>
+            </ul>
         </div>
-    </nav>
-
-    <!-- Script pour vérifier la session côté client uniquement si utilisateur connecté -->
-    <script th:if="${currentUsername != null}">
-        (function() {
-            const checkSession = () => {
-                fetch('/session/check', { credentials: 'same-origin' })
-                    .then(resp => {
-                        if (resp.status === 401) {
-                            // session invalide → redirection vers login
-                            window.location.href = '/login?expired=true';
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Session check failed', err);
-                    });
-            };
-
-            // check on load
-            checkSession();
-            // check every 60 seconds
-            setInterval(checkSession, 60000);
-        })();
-    </script>
-</div>
+    </div>
+</nav>

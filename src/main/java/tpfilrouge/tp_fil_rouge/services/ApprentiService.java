@@ -58,6 +58,15 @@ public class ApprentiService {
         apprentiRepository.deleteById(id);
     }
 
+    // Méthodes pour l'interface web
+    public List<Apprenti> getApprentisCourants() {
+        return apprentiRepository.findByEstArchiveFalseOrderByNomAscPrenomAsc();
+    }
+
+    public boolean existsByEmail(String email) {
+        return apprentiRepository.existsByEmail(email);
+    }
+
     // Règle métier : promotion et archivage pour nouvelle année académique
     @Transactional
     public String promouvoirEtArchiverApprentisNouvelleAnnee(Integer nouvelleAnneeId) {
@@ -83,23 +92,23 @@ public class ApprentiService {
             String programme = apprenti.getProgramme();
 
             switch (programme) {
-                case "I1":
-                    apprenti.setProgramme("I2");
+                case "L1":
+                    apprenti.setProgramme("L2");
                     apprenti.setAnneeAcademique(nouvelleAnnee);
                     promusI1I2++;
                     break;
-                case "I2":
-                    apprenti.setProgramme("I3");
+                case "L2":
+                    apprenti.setProgramme("L3");
                     apprenti.setAnneeAcademique(nouvelleAnnee);
                     promusI2I3++;
                     break;
-                case "I3":
+                case "L3":
                     apprenti.setEstArchive(true);
-                    // Les I3 restent dans l'ancienne année mais sont archivés
+                    // Les L3 restent dans l'ancienne année mais sont archivés
                     archivesI3++;
                     break;
                 default:
-                    // Autres programmes (M2-PRO, etc.) : simple changement d'année
+                    // Autres programmes non reconnus : simple changement d'année
                     apprenti.setAnneeAcademique(nouvelleAnnee);
                     autresProgrammes++;
                     break;
@@ -111,7 +120,7 @@ public class ApprentiService {
 
         // Créer un rapport de la promotion
         return String.format(
-            "Promotion terminée : %d I1→I2, %d I2→I3, %d I3 archivés, %d autres programmes transférés",
+            "Promotion terminée : %d L1→L2, %d L2→L3, %d L3 archivés, %d autres programmes transférés",
             promusI1I2, promusI2I3, archivesI3, autresProgrammes
         );
     }
@@ -123,6 +132,11 @@ public class ApprentiService {
             .orElseThrow(() -> new RuntimeException("Année académique courante non trouvée"));
 
         promouvoirEtArchiverApprentisNouvelleAnnee(anneeCourante.getId());
+    }
+
+    // Méthodes pour la gestion des années académiques
+    public long compterApprentisByProgramme(String programme) {
+        return apprentiRepository.countByProgrammeAndEstArchiveFalse(programme);
     }
 
     // Méthodes de recherche (Exigence 7)

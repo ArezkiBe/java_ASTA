@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Détails de ' + ${apprenti.nomComplet} + ' - ASTA'">Détails de l'apprenti - ASTA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    
+    <!-- Navigation unifiée -->
+    <div th:replace="~{fragments/header :: navbar('apprentis')}"></div>
+
+    <div class="container-fluid mt-4">
+        <!-- Messages flash -->
+        <div th:replace="~{fragments/messages :: all}"></div>
+
+        <div th:if="${erreur}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${erreur}">Message d'erreur</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Breadcrumb -->
+        <div th:replace="~{fragments/breadcrumb :: apprentis(${apprenti.nomComplet})}"></div>
+
+        <!-- En-tête avec actions -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <div class="avatar-circle bg-primary rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="fas fa-user-graduate fa-2x text-white"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="h2 mb-1" th:text="${apprenti.nomComplet}">Jean DUPONT</h1>
+                        <p class="text-muted mb-2">
+                            <span th:text="${apprenti.programme}" 
+                                  th:class="'badge ' + (${apprenti.programme == 'I1'} ? 'bg-success' : 
+                                                       (${apprenti.programme == 'I2'} ? 'bg-warning text-dark' : 
+                                                       (${apprenti.programme == 'I3'} ? 'bg-danger' : 'bg-info')))">
+                                I2
+                            </span>
+                            <span class="mx-2">•</span>
+                            <span th:text="${apprenti.majeure}">Digital Transformation</span>
+                        </p>
+                        <p class="mb-0">
+                            <i class="fas fa-envelope text-primary me-1"></i>
+                            <a th:href="'mailto:' + ${apprenti.email}" th:text="${apprenti.email}" class="text-decoration-none">
+                                jean.dupont@email.com
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="btn-group" role="group">
+                    <a th:href="@{/web/apprentis/{id}/modifier(id=${apprenti.id})}" 
+                       class="btn btn-warning">
+                        <i class="fas fa-edit me-2"></i>Modifier
+                    </a>
+                    <a href="/web/apprentis" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Informations personnelles -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user me-2"></i>Informations personnelles
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label text-muted">Nom de famille</label>
+                                <p class="fw-bold" th:text="${apprenti.nom}">DUPONT</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label text-muted">Prénom</label>
+                                <p class="fw-bold" th:text="${apprenti.prenom}">Jean</p>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Email</label>
+                                <p class="fw-bold">
+                                    <a th:href="'mailto:' + ${apprenti.email}" 
+                                       th:text="${apprenti.email}" 
+                                       class="text-decoration-none">
+                                        jean.dupont@email.com
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Téléphone</label>
+                                <p class="fw-bold" th:if="${apprenti.telephone != null and #strings.length(apprenti.telephone) > 0}" 
+                                   th:text="${apprenti.telephone}">06 12 34 56 78</p>
+                                <p class="text-muted fst-italic" th:unless="${apprenti.telephone != null and #strings.length(apprenti.telephone) > 0}">
+                                    <i class="fas fa-minus"></i> Non renseigné
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informations académiques -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-graduation-cap me-2"></i>Informations académiques
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label text-muted">Programme</label>
+                                <p>
+                                    <span th:text="${apprenti.programme}" 
+                                          th:class="'badge fs-6 ' + (${apprenti.programme == 'I1'} ? 'bg-success' : 
+                                                                     (${apprenti.programme == 'I2'} ? 'bg-warning text-dark' : 
+                                                                     (${apprenti.programme == 'I3'} ? 'bg-danger' : 'bg-info')))">
+                                        I2
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label text-muted">Majeure</label>
+                                <p class="fw-bold" th:text="${apprenti.majeure}">Digital Transformation</p>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Année académique</label>
+                                <p class="fw-bold" th:if="${apprenti.anneeAcademique != null}" 
+                                   th:text="${apprenti.anneeAcademique.annee}">2024-2025</p>
+                                <p class="text-muted fst-italic" th:unless="${apprenti.anneeAcademique != null}">
+                                    <i class="fas fa-minus"></i> Non assigné
+                                </p>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Statut</label>
+                                <p>
+                                    <span th:if="${!apprenti.estArchive}" class="badge bg-success fs-6">
+                                        <i class="fas fa-check-circle me-1"></i>Actif
+                                    </span>
+                                    <span th:if="${apprenti.estArchive}" class="badge bg-secondary fs-6">
+                                        <i class="fas fa-archive me-1"></i>Archivé
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entreprise et encadrement -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="fas fa-building me-2"></i>Entreprise et encadrement
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label text-muted">Entreprise</label>
+                                <div th:if="${apprenti.entreprise != null}">
+                                    <p class="fw-bold mb-1" th:text="${apprenti.entreprise.raisonSociale}">Entreprise XYZ</p>
+                                    <p class="text-muted small mb-2" th:if="${apprenti.entreprise.adresse != null}" 
+                                       th:text="${apprenti.entreprise.adresse}">123 Rue de la Paix, Paris</p>
+                                    <p class="text-info small" th:if="${apprenti.entreprise.informationsUtilesAccesLocaux != null}" 
+                                       th:text="${apprenti.entreprise.informationsUtilesAccesLocaux}">Informations d'accès</p>
+                                </div>
+                                <p class="text-muted fst-italic" th:unless="${apprenti.entreprise != null}">
+                                    <i class="fas fa-minus"></i> Aucune entreprise assignée
+                                </p>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Tuteur enseignant</label>
+                                <p class="fw-bold" th:if="${apprenti.tuteurEnseignant != null}" 
+                                   th:text="${apprenti.tuteurEnseignant.prenom + ' ' + apprenti.tuteurEnseignant.nom}">
+                                   Marie MARTIN
+                                </p>
+                                <p class="text-muted fst-italic" th:unless="${apprenti.tuteurEnseignant != null}">
+                                    <i class="fas fa-minus"></i> Aucun tuteur assigné
+                                </p>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Maître d'apprentissage</label>
+                                <div th:if="${apprenti.maitreApprentissage != null}">
+                                    <p class="fw-bold mb-1" th:text="${apprenti.maitreApprentissage.prenom + ' ' + apprenti.maitreApprentissage.nom}">
+                                        Pierre DURAND
+                                    </p>
+                                    <p class="text-muted small" th:if="${apprenti.maitreApprentissage.email != null}">
+                                        <i class="fas fa-envelope me-1"></i>
+                                        <a th:href="'mailto:' + ${apprenti.maitreApprentissage.email}" 
+                                           th:text="${apprenti.maitreApprentissage.email}" 
+                                           class="text-decoration-none">pierre.durand@entreprise.com</a>
+                                    </p>
+                                </div>
+                                <p class="text-muted fst-italic" th:unless="${apprenti.maitreApprentissage != null}">
+                                    <i class="fas fa-minus"></i> Aucun maître d'apprentissage assigné
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mission et feedback -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tasks me-2"></i>Mission et feedback
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label text-muted">Mission actuelle</label>
+                                <div th:if="${apprenti.mission != null}">
+                                    <p class="fw-bold mb-1" th:text="${apprenti.mission.metierCible}">Développement application web</p>
+                                    <p class="text-muted small" th:if="${apprenti.mission.motsCles != null}" 
+                                       th:text="${apprenti.mission.motsCles}">Mots-clés de la mission...</p>
+                                    <p class="small" th:if="${apprenti.mission.commentaires != null}" 
+                                       th:text="${apprenti.mission.commentaires}">Commentaires de la mission...</p>
+                                    <p class="small">
+                                        <span class="badge bg-primary" th:if="${apprenti.mission.motsCles != null}" 
+                                              th:text="${apprenti.mission.motsCles}">Java, Spring Boot, React</span>
+                                    </p>
+                                </div>
+                                <p class="text-muted fst-italic" th:unless="${apprenti.mission != null}">
+                                    <i class="fas fa-minus"></i> Aucune mission assignée
+                                </p>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted">Feedback tuteur enseignant</label>
+                                <div th:if="${apprenti.feedbackTuteurEnseignant != null and #strings.length(apprenti.feedbackTuteurEnseignant) > 0}">
+                                    <div class="bg-light p-3 rounded border">
+                                        <p class="mb-0" th:text="${apprenti.feedbackTuteurEnseignant}">
+                                            Excellent travail, très motivé et autonome...
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="text-muted fst-italic" th:unless="${apprenti.feedbackTuteurEnseignant != null and #strings.length(apprenti.feedbackTuteurEnseignant) > 0}">
+                                    <i class="fas fa-minus"></i> Aucun feedback disponible
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Évaluations -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clipboard-check me-2"></i>Évaluations
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${apprenti.evaluations != null and !apprenti.evaluations.isEmpty()}">
+                            <div th:each="evaluation : ${apprenti.evaluations}" class="border-bottom pb-2 mb-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1" th:text="${evaluation.type}">Évaluation technique</h6>
+                                        <p class="small text-muted mb-1" th:text="${evaluation.dateSoutenance}">15/10/2025</p>
+                                    </div>
+                                    <span th:text="${evaluation.noteFinale + '/20'}" 
+                                          th:class="'badge fs-6 ' + (${evaluation.noteFinale >= 16} ? 'bg-success' : 
+                                                                     (${evaluation.noteFinale >= 12} ? 'bg-warning text-dark' : 
+                                                                     (${evaluation.noteFinale >= 10} ? 'bg-info' : 'bg-danger')))">
+                                        15/20
+                                    </span>
+                                </div>
+                                <p class="small mb-0" th:if="${evaluation.commentaires != null}" 
+                                   th:text="${evaluation.commentaires}">Commentaire de l'évaluation...</p>
+                            </div>
+                        </div>
+                        <p class="text-muted fst-italic text-center" th:unless="${apprenti.evaluations != null and !apprenti.evaluations.isEmpty()}">
+                            <i class="fas fa-clipboard me-1"></i> Aucune évaluation disponible
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visites -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calendar-check me-2"></i>Visites en entreprise
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${apprenti.visites != null and !apprenti.visites.isEmpty()}">
+                            <div th:each="visite : ${apprenti.visites}" class="border-bottom pb-2 mb-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">
+                                            Visite <span th:text="${visite.date != null ? #temporals.format(visite.date, 'dd/MM/yyyy') : 'Date non définie'}">15/10/2025</span>
+                                        </h6>
+                                        <p class="small text-muted mb-1" th:if="${visite.format != null}" 
+                                           th:text="${'Format: ' + visite.format}">Format: Présentiel</p>
+                                        <p class="small text-muted mb-1" th:if="${visite.commentaireTuteur != null}" 
+                                           th:text="${visite.commentaireTuteur}">Commentaire de la visite...</p>
+                                    </div>
+                                    <span th:if="${visite.statut != null}" 
+                                          th:text="${visite.statut}" 
+                                          th:class="'badge fs-6 ' + (${visite.statut == 'Réalisée'} ? 'bg-success' : 
+                                                                     (${visite.statut == 'Programmée'} ? 'bg-warning text-dark' : 'bg-danger'))">
+                                        Réalisée
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted fst-italic text-center" th:unless="${apprenti.visites != null and !apprenti.visites.isEmpty()}">
+                            <i class="fas fa-calendar-times me-1"></i> Aucune visite planifiée
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script pour auto-hide des alertes -->
+    <script>
+        // Auto-hide des alertes après 5 secondes
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

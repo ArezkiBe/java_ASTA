@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${modeModification and apprenti != null and apprenti.nomComplet != null ? ('Modifier ' + apprenti.nomComplet + ' - ASTA') : 'Ajouter un apprenti - ASTA'}">Formulaire apprenti - ASTA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    
+    <!-- Navigation unifiée -->
+    <div th:replace="~{fragments/header :: navbar('apprentis')}"></div>
+
+    <div class="container-fluid">
+        <!-- Messages flash -->
+        <div th:replace="~{fragments/messages :: all}"></div>
+        
+        <div class="content-wrapper">
+
+        <div th:if="${erreur}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${erreur}">Message d'erreur</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Breadcrumb -->
+        <div th:replace="~{fragments/breadcrumb :: apprentis(${modeModification and apprenti != null and apprenti.nomComplet != null ? ('Modifier ' + apprenti.nomComplet) : 'Ajouter un apprenti'})}"></div>
+
+        <!-- En-tête -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <div th:class="'avatar-circle ' + (${modeModification ? 'bg-warning' : 'bg-success'}) + ' rounded-circle d-flex align-items-center justify-content-center'">
+                            <i th:class="${modeModification ? 'fas fa-user-edit' : 'fas fa-user-plus'} + ' fa-2x text-white'"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="h2 mb-1" th:text="${modeModification and apprenti != null and apprenti.nomComplet != null ? ('Modifier ' + apprenti.nomComplet) : 'Ajouter un nouvel apprenti'}">
+                            Formulaire apprenti
+                        </h1>
+                        <p class="text-muted mb-0">
+                            <span th:if="${modeModification}">
+                                <i class="fas fa-edit me-1"></i>Modification des informations existantes
+                            </span>
+                            <span th:unless="${modeModification}">
+                                <i class="fas fa-plus me-1"></i>Création d'un nouveau profil apprenti
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="btn-group" role="group">
+                    <a th:href="${modeModification and apprenti != null and apprenti.id != null ? '/web/apprentis/' + apprenti.id : '/web/apprentis'}" 
+                       class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Annuler
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <form th:object="${apprenti}" 
+                      th:action="${modeModification and apprenti != null and apprenti.id != null ? '/web/apprentis/' + apprenti.id + '/modifier' : '/web/apprentis/ajouter'}" 
+                      method="post">
+                    
+                    <!-- Informations personnelles -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-user me-2"></i>Informations personnelles
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <!-- Nom -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" 
+                                               th:field="*{nom}" 
+                                               class="form-control" 
+                                               id="nom" 
+                                               placeholder="Nom de famille"
+                                               required
+                                               maxlength="100"
+                                               th:classappend="${#fields.hasErrors('nom')} ? 'is-invalid' : ''">
+                                        <label for="nom">Nom de famille *</label>
+                                        <div th:if="${#fields.hasErrors('nom')}" class="invalid-feedback">
+                                            <span th:errors="*{nom}">Erreur nom</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Prénom -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" 
+                                               th:field="*{prenom}" 
+                                               class="form-control" 
+                                               id="prenom" 
+                                               placeholder="Prénom"
+                                               required
+                                               maxlength="100"
+                                               th:classappend="${#fields.hasErrors('prenom')} ? 'is-invalid' : ''">
+                                        <label for="prenom">Prénom *</label>
+                                        <div th:if="${#fields.hasErrors('prenom')}" class="invalid-feedback">
+                                            <span th:errors="*{prenom}">Erreur prénom</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="col-md-8">
+                                    <div class="form-floating">
+                                        <input type="email" 
+                                               th:field="*{email}" 
+                                               class="form-control" 
+                                               id="email" 
+                                               placeholder="email@exemple.com"
+                                               required
+                                               maxlength="100"
+                                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''">
+                                        <label for="email">Adresse email *</label>
+                                        <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback">
+                                            <span th:errors="*{email}">Erreur email</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Téléphone -->
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input type="tel" 
+                                               th:field="*{telephone}" 
+                                               class="form-control" 
+                                               id="telephone" 
+                                               placeholder="06 12 34 56 78"
+                                               maxlength="15">
+                                        <label for="telephone">Téléphone (optionnel)</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informations académiques -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-graduation-cap me-2"></i>Informations académiques
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <!-- Programme -->
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <select th:field="*{programme}" 
+                                                class="form-select" 
+                                                id="programme"
+                                                required
+                                                th:classappend="${#fields.hasErrors('programme')} ? 'is-invalid' : ''">
+                                            <option value="">Choisissez un programme...</option>
+                                            <option value="L1">L1 - Première année</option>
+                                            <option value="L2">L2 - Deuxième année</option>
+                                            <option value="L3">L3 - Troisième année</option>
+                                        </select>
+                                        <label for="programme">Programme d'études *</label>
+                                        <div th:if="${#fields.hasErrors('programme')}" class="invalid-feedback">
+                                            <span th:errors="*{programme}">Erreur programme</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Majeure -->
+                                <div class="col-md-8">
+                                    <div class="form-floating">
+                                        <select th:field="*{majeure}" 
+                                                class="form-select" 
+                                                id="majeure"
+                                                required
+                                                th:classappend="${#fields.hasErrors('majeure')} ? 'is-invalid' : ''">
+                                            <option value="">Choisissez une majeure...</option>
+                                            <option value="Digital Transformation">Digital Transformation</option>
+                                            <option value="Data Science">Data Science</option>
+                                            <option value="Cybersécurité">Cybersécurité</option>
+                                            <option value="Intelligence Artificielle">Intelligence Artificielle</option>
+                                            <option value="Développement Logiciel">Développement Logiciel</option>
+                                            <option value="Systèmes et Réseaux">Systèmes et Réseaux</option>
+                                        </select>
+                                        <label for="majeure">Majeure/Spécialisation *</label>
+                                        <div th:if="${#fields.hasErrors('majeure')}" class="invalid-feedback">
+                                            <span th:errors="*{majeure}">Erreur majeure</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Année académique -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select th:field="*{anneeAcademique.id}" 
+                                                class="form-select" 
+                                                id="anneeAcademique"
+                                                required
+                                                th:classappend="${#fields.hasErrors('anneeAcademique')} ? 'is-invalid' : ''">
+                                            <option value="">Choisissez une année...</option>
+                                            <option th:each="annee : ${annees}" 
+                                                    th:value="${annee.id}" 
+                                                    th:text="${annee.annee + (annee.estCourante ? ' (Courante)' : '')}"
+                                                    th:selected="${apprenti.anneeAcademique != null and apprenti.anneeAcademique.id == annee.id}">
+                                                2024-2025 (Courante)
+                                            </option>
+                                        </select>
+                                        <label for="anneeAcademique">Année académique *</label>
+                                        <div th:if="${#fields.hasErrors('anneeAcademique')}" class="invalid-feedback">
+                                            <span th:errors="*{anneeAcademique}">Erreur année</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Statut archivé (seulement en modification) -->
+                                <div class="col-md-6" th:if="${modeModification}">
+                                    <div class="form-check form-switch mt-3">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               th:field="*{estArchive}" 
+                                               id="estArchive">
+                                        <label class="form-check-label" for="estArchive">
+                                            <i class="fas fa-archive me-1"></i>Apprenti archivé
+                                        </label>
+                                        <div class="form-text text-warning">
+                                            <i class="fas fa-warning me-1"></i>
+                                            Un apprenti archivé n'apparaîtra plus dans la liste active
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Encadrement professionnel -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>Encadrement professionnel
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <!-- Maître d'apprentissage -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select th:field="*{maitreApprentissage.id}" 
+                                                class="form-select" 
+                                                id="maitreApprentissage"
+                                                required
+                                                th:classappend="${#fields.hasErrors('maitreApprentissage')} ? 'is-invalid' : ''">
+                                            <option value="">Choisissez un maître d'apprentissage...</option>
+                                            <option th:each="maitre : ${maitres}" 
+                                                    th:value="${maitre.id}" 
+                                                    th:text="${maitre.prenom + ' ' + maitre.nom + ' (' + maitre.poste + ')'}"
+                                                    th:selected="${apprenti.maitreApprentissage != null and apprenti.maitreApprentissage.id == maitre.id}">
+                                                Sophie MARTIN (Lead Developer)
+                                            </option>
+                                        </select>
+                                        <label for="maitreApprentissage">Maître d'apprentissage *</label>
+                                        <div th:if="${#fields.hasErrors('maitreApprentissage')}" class="invalid-feedback">
+                                            <span th:errors="*{maitreApprentissage}">Erreur maître d'apprentissage</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Entreprise -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select th:field="*{entreprise.id}" 
+                                                class="form-select" 
+                                                id="entreprise"
+                                                th:classappend="${#fields.hasErrors('entreprise')} ? 'is-invalid' : ''">
+                                            <option value="">Pas d'entreprise assignée</option>
+                                            <option th:each="entreprise : ${entreprises}" 
+                                                    th:value="${entreprise.id}" 
+                                                    th:text="${entreprise.raisonSociale}"
+                                                    th:selected="${apprenti.entreprise != null and apprenti.entreprise.id == entreprise.id}">
+                                                Entreprise XYZ
+                                            </option>
+                                        </select>
+                                        <label for="entreprise">Entreprise (optionnel)</label>
+                                        <div th:if="${#fields.hasErrors('entreprise')}" class="invalid-feedback">
+                                            <span th:errors="*{entreprise}">Erreur entreprise</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Feedback tuteur (seulement en modification) -->
+                                <div class="col-12" th:if="${modeModification}">
+                                    <div class="form-floating">
+                                        <textarea th:field="*{feedbackTuteurEnseignant}" 
+                                                  class="form-control" 
+                                                  id="feedbackTuteur" 
+                                                  placeholder="Commentaires du tuteur enseignant..."
+                                                  style="height: 120px"
+                                                  maxlength="500"
+                                                  th:classappend="${#fields.hasErrors('feedbackTuteurEnseignant')} ? 'is-invalid' : ''"></textarea>
+                                        <label for="feedbackTuteur">Feedback du tuteur enseignant</label>
+                                        <div th:if="${#fields.hasErrors('feedbackTuteurEnseignant')}" class="invalid-feedback">
+                                            <span th:errors="*{feedbackTuteurEnseignant}">Erreur feedback</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Boutons d'action -->
+                    <div class="card shadow-sm">
+                        <div class="card-body bg-light text-end">
+                            <div class="btn-group" role="group">
+                                <a th:href="${modeModification and apprenti != null and apprenti.id != null ? '/web/apprentis/' + apprenti.id : '/web/apprentis'}" 
+                                   class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i>Annuler
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <span th:if="${modeModification}">
+                                        <i class="fas fa-save me-2"></i>Enregistrer
+                                    </span>
+                                    <span th:unless="${modeModification}">
+                                        <i class="fas fa-plus me-2"></i>Ajouter
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        </div> <!-- Fermeture content-wrapper -->
+    </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script simple -->
+    <script>
+        // Auto-hide des alertes après 5 secondes
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

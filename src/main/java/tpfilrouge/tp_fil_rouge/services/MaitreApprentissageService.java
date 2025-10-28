@@ -2,6 +2,7 @@ package tpfilrouge.tp_fil_rouge.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tpfilrouge.tp_fil_rouge.exceptions.MaitreApprentissageNonTrouveException;
 import tpfilrouge.tp_fil_rouge.modele.entite.MaitreApprentissage;
 import tpfilrouge.tp_fil_rouge.modele.repository.MaitreApprentissageRepository;
 
@@ -32,7 +33,7 @@ public class MaitreApprentissageService {
 
     public MaitreApprentissage updateMaitre(Integer id, MaitreApprentissage maitreDetails) {
         MaitreApprentissage maitre = maitreApprentissageRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Maître d'apprentissage non trouvé"));
+            .orElseThrow(() -> new MaitreApprentissageNonTrouveException(id));
 
         maitre.setNom(maitreDetails.getNom());
         maitre.setPrenom(maitreDetails.getPrenom());

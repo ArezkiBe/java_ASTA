@@ -1,0 +1,56 @@
+<!-- Fragment pour les états vides professionnels -->
+<div th:fragment="empty-state(icon, title, description, actionText, actionUrl)" 
+     xmlns:th="http://www.thymeleaf.org"
+     class="text-center py-5">
+    <div class="card">
+        <div class="card-body py-5">
+            <div class="mb-4">
+                <i th:class="'fas fa-' + ${icon} + ' text-muted'" style="font-size: 4rem;"></i>
+            </div>
+            <h3 class="text-muted mb-3" th:text="${title}">Titre</h3>
+            <p class="text-muted mb-4" th:text="${description}">Description</p>
+            <a th:href="${actionUrl}" 
+               th:if="${actionText != null and actionUrl != null}"
+               class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i>
+                <span th:text="${actionText}">Action</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Fragment pour les statistiques -->
+<div th:fragment="stat-card(icon, number, label, color)" 
+     xmlns:th="http://www.thymeleaf.org"
+     class="stats-card"
+     th:classappend="${color != null ? 'bg-' + color : ''}">
+    <div class="d-flex align-items-center">
+        <div class="me-3">
+            <i th:class="'fas fa-' + ${icon} + ' fa-2x'"></i>
+        </div>
+        <div>
+            <div class="stats-number" th:text="${number}">0</div>
+            <div class="stats-label" th:text="${label}">Label</div>
+        </div>
+    </div>
+</div>
+
+<!-- Fragment pour les en-têtes de page -->
+<div th:fragment="page-header(title, subtitle, actionText, actionUrl, actionIcon)" 
+     xmlns:th="http://www.thymeleaf.org"
+     class="page-header">
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <h1 class="page-title" th:text="${title}">Titre</h1>
+            <p class="page-subtitle" 
+               th:if="${subtitle != null}" 
+               th:text="${subtitle}">Sous-titre</p>
+        </div>
+        <a th:if="${actionText != null and actionUrl != null}"
+           th:href="${actionUrl}" 
+           class="btn btn-primary btn-lg">
+            <i th:if="${actionIcon != null}" th:class="'fas fa-' + ${actionIcon}"></i>
+            <span th:text="${actionText}">Action</span>
+        </a>
+    </div>
+</div>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Visites - ASTA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Navigation unifiée -->
+    <div th:replace="~{fragments/header :: navbar('visites')}"></div>
+
+    <div class="container-fluid mt-4">
+        
+        <!-- Messages flash -->
+        <div th:replace="~{fragments/messages :: all}"></div>
+
+        <!-- En-tête avec titre et boutons d'action -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 mb-1">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            Gestion des Visites
+                        </h1>
+                        <p class="text-muted mb-0">Planifiez et suivez les visites en entreprise</p>
+                    </div>
+                    <div>
+                        <a th:href="@{/web/visites/prochaines}" class="btn btn-info me-2">
+                            <i class="fas fa-calendar-check me-2"></i>Visites Prochaines
+                        </a>
+                        <a th:href="@{/web/visites/nouveau}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Planifier Visite
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques rapides -->
+        <div class="row mb-4" th:if="${visites != null and not visites.empty}">
+            <div class="col-md-3">
+                <div class="card text-center bg-primary text-white">
+                    <div class="card-body">
+                        <i class="fas fa-calendar-alt fa-2x mb-2"></i>
+                        <h3 th:text="${visitesProgrammees}">0</h3>
+                        <p class="card-text">Programmées</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center bg-success text-white">
+                    <div class="card-body">
+                        <i class="fas fa-check-circle fa-2x mb-2"></i>
+                        <h3 th:text="${visitesRealisees}">0</h3>
+                        <p class="card-text">Réalisées</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center bg-warning text-dark">
+                    <div class="card-body">
+                        <i class="fas fa-times-circle fa-2x mb-2"></i>
+                        <h3 th:text="${visitesAnnulees}">0</h3>
+                        <p class="card-text">Annulées</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center bg-info text-white">
+                    <div class="card-body">
+                        <i class="fas fa-chart-line fa-2x mb-2"></i>
+                        <h3 th:text="${visites?.size() ?: 0}">0</h3>
+                        <p class="card-text">Total</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des visites -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Liste des Visites
+                    <span class="badge bg-primary ms-2" th:text="${visites?.size() ?: 0}">0</span>
+                </h5>
+            </div>
+            
+            <div class="card-body p-0">
+                <div th:if="${visites == null or visites.empty}" class="text-center py-5">
+                    <div class="text-muted">
+                        <i class="fas fa-map-marker-alt fa-3x mb-3 opacity-50"></i>
+                        <p class="h5">Aucune visite planifiée</p>
+                        <p>Commencez par planifier votre première visite en entreprise.</p>
+                        <a th:href="@{/web/visites/nouveau}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Planifier une Visite
+                        </a>
+                    </div>
+                </div>
+                
+                <div th:if="${visites != null and not visites.empty}" class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Apprenti</th>
+                                <th scope="col">Format</th>
+                                <th scope="col">Statut</th>
+                                <th scope="col">Commentaires</th>
+                                <th scope="col" width="150">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="visite : ${visites}" class="align-middle"
+                                th:classappend="${visite.date != null and visite.date.isBefore(T(java.time.LocalDate).now()) and visite.statut == 'Programmée'} ? 'table-warning' : ''">
+                                <td>
+                                    <div th:if="${visite.date != null}">
+                                        <div class="fw-medium" th:text="${#temporals.format(visite.date, 'dd/MM/yyyy')}">Date</div>
+                                        <small class="text-muted" th:text="${#temporals.format(visite.date, 'EEEE', new java.util.Locale('fr'))}">Jour</small>
+                                    </div>
+                                    <span th:unless="${visite.date != null}" class="text-muted">Non programmée</span>
+                                </td>
+                                <td>
+                                    <div th:if="${visite.apprenti != null}">
+                                        <div class="fw-medium" th:text="${visite.apprenti.nomComplet}">Nom Apprenti</div>
+                                        <small class="text-muted" th:text="${visite.apprenti.programme}">Programme</small>
+                                    </div>
+                                    <span th:unless="${visite.apprenti != null}" class="text-muted">Non assigné</span>
+                                </td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${visite.format == 'Présentiel'} ? 'bg-success' : (${visite.format == 'Visio'} ? 'bg-info' : 'bg-secondary')"
+                                          th:text="${visite.format ?: 'Non défini'}">Format</span>
+                                </td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${visite.statut == 'Réalisée'} ? 'bg-success' : (${visite.statut == 'Programmée'} ? 'bg-primary' : 'bg-warning')"
+                                          th:text="${visite.statut ?: 'Non défini'}">Statut</span>
+                                    
+                                    <!-- Indicateur de retard -->
+                                    <div th:if="${visite.date != null and visite.date.isBefore(T(java.time.LocalDate).now()) and visite.statut == 'Programmée'}" 
+                                         class="text-danger small mt-1">
+                                        <i class="fas fa-exclamation-triangle"></i> En retard
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 200px;" 
+                                         th:text="${visite.commentaires ?: 'Aucun commentaire'}" 
+                                         th:title="${visite.commentaires}">Commentaires</div>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a th:href="@{/web/visites/{id}(id=${visite.id})}" 
+                                           class="btn btn-outline-info" 
+                                           title="Voir détails">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a th:href="@{/web/visites/{id}/modifier(id=${visite.id})}" 
+                                           class="btn btn-outline-warning" 
+                                           title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        
+                                        <!-- Bouton marquer comme réalisée (seulement si programmée) -->
+                                        <form th:if="${visite.statut == 'Programmée'}"
+                                              th:action="@{/web/visites/{id}/marquer-realisee(id=${visite.id})}" 
+                                              method="post" class="d-inline">
+                                            <button type="submit" 
+                                                    class="btn btn-outline-success" 
+                                                    title="Marquer comme réalisée">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        
+                                        <form th:action="@{/web/visites/{id}/supprimer(id=${visite.id})}" 
+                                              method="post" class="d-inline">
+                                            <button type="submit" 
+                                                    class="btn btn-outline-danger" 
+                                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette visite ?')"
+                                                    title="Supprimer">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

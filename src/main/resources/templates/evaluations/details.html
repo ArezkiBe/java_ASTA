@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Détails Évaluation - ' + ${evaluation.themeSujet} + ' - ASTA'">Détails Évaluation - ASTA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Navigation unifiée -->
+    <div th:replace="~{fragments/header :: navbar('evaluations')}"></div>
+
+    <div class="container-fluid mt-4">
+        
+        <!-- Fil d'Ariane -->
+        <div th:replace="~{fragments/breadcrumb :: evaluations(${evaluation.themeSujet})}"></div>
+
+        <!-- Messages flash -->
+        <div th:replace="~{fragments/messages :: all}"></div>
+
+        <div class="row">
+            <!-- Informations principales -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clipboard-check me-2"></i>
+                            Détails de l'Évaluation
+                        </h5>
+                        <div>
+                            <a th:href="@{/web/evaluations/{id}/modifier(id=${evaluation.id})}" 
+                               class="btn btn-light btn-sm">
+                                <i class="fas fa-edit me-1"></i>Modifier
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Avatar et type -->
+                            <div class="col-md-3 text-center mb-3">
+                                <div class="avatar-circle bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                                     style="width: 80px; height: 80px;">
+                                    <i class="fas fa-clipboard-check fa-2x text-white"></i>
+                                </div>
+                                <span class="badge fs-6" 
+                                      th:classappend="${evaluation.type == 'Soutenance'} ? 'bg-warning' : 'bg-info'"
+                                      th:text="${evaluation.type ?: 'Non défini'}">Type</span>
+                            </div>
+                            
+                            <!-- Informations détaillées -->
+                            <div class="col-md-9">
+                                <h4 class="mb-3" th:text="${evaluation.themeSujet ?: 'Thème non défini'}">Thème de l'évaluation</h4>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-sm-4">
+                                        <small class="text-muted">Note Finale</small>
+                                        <div class="fw-bold">
+                                            <span th:if="${evaluation.noteFinale != null}" 
+                                                  class="badge fs-6"
+                                                  th:classappend="${evaluation.noteFinale >= 16} ? 'bg-success' : (${evaluation.noteFinale >= 12} ? 'bg-warning' : 'bg-danger')"
+                                                  th:text="${evaluation.noteFinale + '/20'}">Note</span>
+                                            <span th:unless="${evaluation.noteFinale != null}" class="text-muted">Non notée</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <small class="text-muted">Date de Soutenance</small>
+                                        <div class="fw-bold">
+                                            <span th:if="${evaluation.dateSoutenance != null}" 
+                                                  th:text="${evaluation.dateSoutenance}">Date</span>
+                                            <span th:unless="${evaluation.dateSoutenance != null}" class="text-muted">Non programmée</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <small class="text-muted">Statut</small>
+                                        <div class="fw-bold">
+                                            <span th:if="${evaluation.noteFinale != null and evaluation.noteFinale >= 12}" 
+                                                  class="text-success">
+                                                <i class="fas fa-check-circle"></i> Validée
+                                            </span>
+                                            <span th:if="${evaluation.noteFinale != null and evaluation.noteFinale < 12}" 
+                                                  class="text-danger">
+                                                <i class="fas fa-times-circle"></i> Non validée
+                                            </span>
+                                            <span th:unless="${evaluation.noteFinale != null}" class="text-warning">
+                                                <i class="fas fa-clock"></i> En attente
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Commentaires -->
+                        <div th:if="${evaluation.commentaires != null and !#strings.isEmpty(evaluation.commentaires)}" 
+                             class="mt-4">
+                            <h6 class="mb-3">
+                                <i class="fas fa-comment-alt text-primary me-2"></i>
+                                Commentaires et Observations
+                            </h6>
+                            <div class="border-start border-primary border-4 ps-3 bg-light p-3 rounded-end">
+                                <p class="mb-0" th:text="${evaluation.commentaires}">Commentaires de l'évaluation</p>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a th:href="@{/web/evaluations}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                                </a>
+                                
+                                <div>
+                                    <a th:href="@{/web/evaluations/{id}/modifier(id=${evaluation.id})}" 
+                                       class="btn btn-warning me-2">
+                                        <i class="fas fa-edit me-2"></i>Modifier
+                                    </a>
+                                    <form th:action="@{/web/evaluations/{id}/supprimer(id=${evaluation.id})}" 
+                                          method="post" class="d-inline">
+                                        <button type="submit" 
+                                                class="btn btn-danger"
+                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette évaluation ?')">
+                                            <i class="fas fa-trash me-2"></i>Supprimer
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panneau latéral -->
+            <div class="col-lg-4">
+                
+                <!-- Barème de notation -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-star me-2"></i>
+                            Barème de Notation
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="text-center p-2 border rounded bg-success text-white">
+                                    <div class="fw-bold">16-20</div>
+                                    <small>Très bien</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-2 border rounded bg-primary text-white">
+                                    <div class="fw-bold">14-16</div>
+                                    <small>Bien</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-2 border rounded bg-warning text-dark">
+                                    <div class="fw-bold">12-14</div>
+                                    <small>Assez bien</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-2 border rounded bg-danger text-white">
+                                    <div class="fw-bold">0-12</div>
+                                    <small>Insuffisant</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

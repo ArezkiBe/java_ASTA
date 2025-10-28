@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Années Académiques - ASTA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    
+    <!-- Navigation unifiée -->
+    <div th:replace="~{fragments/header :: navbar('annees')}"></div>
+
+    <div class="container-fluid mt-4">
+        <!-- Messages flash -->
+        <div th:replace="~{fragments/messages :: all}"></div>
+
+        <div class="row">
+            <!-- Actions autorisées -->
+            <div class="col-md-4">
+                <!-- Année courante -->
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calendar-check me-2"></i>
+                            Année Courante
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div th:if="${anneeCourante}">
+                            <h3 class="text-primary mb-1" th:text="${anneeCourante.annee}">2024-2025</h3>
+                            <small class="text-muted">Année académique active</small>
+                        </div>
+                        <div th:unless="${anneeCourante}" class="text-muted">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Aucune année définie
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEULE ACTION AUTORISÉE: Passage à l'année suivante -->
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-graduation-cap me-2"></i>
+                            Promotion Automatique
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Action Irréversible !</strong><br>
+                            Cette action promeut automatiquement TOUS les apprentis.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-muted">Promotions automatiques :</h6>
+                            <ul class="small text-muted mb-3">
+                                <li><i class="fas fa-arrow-right text-primary me-1"></i> L1 → L2</li>
+                                <li><i class="fas fa-arrow-right text-success me-1"></i> L2 → L3</li>
+                                <li><i class="fas fa-archive text-warning me-1"></i> L3 → Diplômés (Archivés)</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Cas normal : Année courante existe -->
+                        <form th:action="@{/web/annees/passer-annee-suivante}" method="post" th:if="${anneeCourante}">
+                            <div class="mb-3">
+                                <label for="nouvelleAnnee" class="form-label">Année suivante</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="nouvelleAnnee" 
+                                       name="nouvelleAnnee" 
+                                       th:value="${anneeSuivante}"
+                                       placeholder="ex: 2025-2026"
+                                       required
+                                       pattern="[0-9]{4}-[0-9]{4}"
+                                       readonly>
+                                <div class="form-text">Progression séquentielle obligatoire</div>
+                            </div>
+                            <button type="submit" 
+                                    class="btn btn-success w-100"
+                                    onclick="return confirm('🎓 CONFIRMER LA PROMOTION ?\\n\\nCette action va :\\n• Créer l\'année suivante\\n• Promouvoir TOUS les apprentis\\n• Diplômer les L3\\n\\nCette action est IRRÉVERSIBLE.');">
+                                <i class="fas fa-forward me-2"></i>Promotion Automatique
+                            </button>
+                        </form>
+                        
+                        <!-- Cas spécial : Première année académique -->
+                        <form th:action="@{/web/annees/passer-annee-suivante}" method="post" th:unless="${anneeCourante}">
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Première Configuration</strong><br>
+                                Aucune année académique n'est définie. Créez la première année.
+                            </div>
+                            <div class="mb-3">
+                                <label for="premiereAnnee" class="form-label">Première année académique</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="premiereAnnee" 
+                                       name="nouvelleAnnee" 
+                                       placeholder="ex: 2024-2025"
+                                       required
+                                       pattern="[0-9]{4}-[0-9]{4}">
+                                <div class="form-text">Saisissez l'année académique actuelle</div>
+                            </div>
+                            <button type="submit" 
+                                    class="btn btn-primary w-100"
+                                    onclick="return confirm('Créer la première année académique ?');">
+                                <i class="fas fa-plus-circle me-2"></i>Créer Première Année
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Statistiques des apprentis -->
+                <div class="card mt-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">
+                            <i class="fas fa-users me-2"></i>
+                            Apprentis Actuels
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <div class="text-center p-2 border rounded">
+                                    <h4 class="text-primary mb-1" th:text="${nombreL1 ?: 0}">0</h4>
+                                    <small class="text-muted">L1</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-center p-2 border rounded">
+                                    <h4 class="text-success mb-1" th:text="${nombreL2 ?: 0}">0</h4>
+                                    <small class="text-muted">L2</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-center p-2 border rounded">
+                                    <h4 class="text-warning mb-1" th:text="${nombreL3 ?: 0}">0</h4>
+                                    <small class="text-muted">L3</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Total: <strong th:text="${(nombreL1 ?: 0) + (nombreL2 ?: 0) + (nombreL3 ?: 0)}">0</strong> apprentis actifs
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historique des années (lecture seule) -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-history me-2"></i>
+                            Historique des Années Académiques
+                        </h5>
+                        <span class="badge bg-info" th:text="${#lists.size(annees)} + ' année(s)'">0 années</span>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(annees)}" class="text-center py-4">
+                            <i class="fas fa-calendar-times text-muted mb-3" style="font-size: 3rem;"></i>
+                            <h6 class="text-muted">Aucune année académique dans l'historique</h6>
+                            <p class="text-muted small">L'historique apparaîtra après la création de la première année</p>
+                        </div>
+
+                        <div th:if="${!#lists.isEmpty(annees)}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th><i class="fas fa-calendar me-1"></i>Année</th>
+                                        <th><i class="fas fa-info-circle me-1"></i>Statut</th>
+                                        <th><i class="fas fa-users me-1"></i>Apprentis</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="annee : ${annees}" 
+                                        th:class="${annee.estCourante} ? 'table-success' : ''">
+                                        <td>
+                                            <strong th:text="${annee.annee}">2024-2025</strong>
+                                            <span th:if="${annee.estCourante}" class="ms-2">
+                                                <i class="fas fa-star text-warning" title="Année courante"></i>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${annee.estCourante}" 
+                                                  class="badge bg-success">
+                                                <i class="fas fa-play me-1"></i>Active
+                                            </span>
+                                            <span th:unless="${annee.estCourante}" 
+                                                  class="badge bg-secondary">
+                                                <i class="fas fa-pause me-1"></i>Passée
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-muted small">
+                                                <i class="fas fa-users me-1"></i>
+                                                <span th:text="${#lists.size(annee.apprentis ?: {})}" th:remove="tag">0</span> apprentis
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3" role="alert">
+                            <i class="fas fa-lock me-2"></i>
+                            <strong>Système Sécurisé</strong><br>
+                            <small>Les années ne peuvent plus être modifiées manuellement. 
+                            Utilisez uniquement la "Promotion Automatique" pour progresser.</small>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

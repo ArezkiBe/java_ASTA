@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Apprentis - ASTA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    
+    <!-- Navigation unifiée -->
+    <div th:replace="~{fragments/header :: navbar('apprentis')}"></div>
+
+    <!-- Contenu principal avec marges cohérentes -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Messages flash -->
+            <div th:replace="~{fragments/messages :: all}"></div>
+
+            <div th:if="${erreur}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${erreur}">Message d'erreur</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- En-tête de la page -->
+            <!-- En-tête de la page -->
+            <div class="page-header mb-4">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2">
+                                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Accueil</a></li>
+                                <li class="breadcrumb-item active">Apprentis</li>
+                            </ol>
+                        </nav>
+                        <h1 class="page-title mb-2">Liste des Apprentis</h1>
+                        <p class="page-subtitle text-muted mb-0">Gestion des étudiants en apprentissage</p>
+                    </div>
+                    <div class="col-auto">
+                        <a href="/web/apprentis/ajouter" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Nouvel apprenti
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Statistiques rapides -->
+        <div class="row mb-4" th:if="${nombreApprentis > 0}">
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-users fa-2x me-3"></i>
+                            <div>
+                                <h4 class="card-title" th:text="${nombreApprentis}">0</h4>
+                                <p class="card-text">Apprentis actifs</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="row">
+            <div class="col-12">
+                <!-- Message si aucun apprenti (Exigence #2.1) -->
+                <div th:if="${nombreApprentis == 0}" class="alert alert-warning text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x mb-3 text-warning"></i>
+                    <h4 class="text-warning">La liste est vide. Ajoutez au moins un apprenti!</h4>
+                    <p class="mb-3">Il n'y a actuellement aucun apprenti enregistré dans le système.</p>
+                    <a href="/web/apprentis/ajouter" class="btn btn-warning btn-lg">
+                        <i class="fas fa-plus me-2"></i>Ajouter le premier apprenti
+                    </a>
+                </div>
+
+            <!-- Liste des apprentis -->
+            <div th:if="${nombreApprentis > 0}" class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="card-title mb-1">Apprentis actifs</h5>
+                            <p class="text-muted small mb-0"><span th:text="${nombreApprentis}">0</span> apprenti(s) trouvé(s)</p>
+                        </div>
+                        <div class="col-auto">
+                            <div class="input-group input-group-sm" style="width: 250px;">
+                                <span class="input-group-text border-end-0 bg-white">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" placeholder="Rechercher un apprenti..." id="searchInput">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="apprentisTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="border-0 ps-4">Apprenti</th>
+                                    <th scope="col" class="border-0">Contact</th>
+                                    <th scope="col" class="border-0">Entreprise</th>
+                                    <th scope="col" class="border-0">Formation</th>
+                                    <th scope="col" class="border-0">Tuteur</th>
+                                    <th scope="col" class="border-0 text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="apprenti : ${apprentis}" class="apprenti-row">
+                                    <!-- Apprenti (nom + prénom avec avatar) -->
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                 style="width: 40px; height: 40px; font-size: 14px; font-weight: 600;">
+                                                <span th:text="${apprenti.prenom.substring(0,1) + apprenti.nom.substring(0,1)}">JD</span>
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold" th:text="${apprenti.prenom + ' ' + apprenti.nom}">Jean DUPONT</div>
+                                                <div class="text-muted small" th:text="${apprenti.programme}">L2</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Contact -->
+                                    <td>
+                                        <div>
+                                            <a th:href="'mailto:' + ${apprenti.email}" 
+                                               th:text="${apprenti.email}" 
+                                               class="text-decoration-none text-primary small">
+                                               jean.dupont@email.com
+                                            </a>
+                                        </div>
+                                        <div th:if="${apprenti.telephone}" class="text-muted small" th:text="${apprenti.telephone}">+33 6 12 34 56 78</div>
+                                    </td>
+                                    
+                                    <!-- Entreprise -->
+                                    <td>
+                                        <div th:if="${apprenti.entreprise != null}">
+                                            <div class="fw-medium" th:text="${apprenti.entreprise.raisonSociale}">Entreprise XYZ</div>
+                                            <div th:if="${apprenti.maitreApprentissage != null}" 
+                                                 class="text-muted small" 
+                                                 th:text="'Maître: ' + ${apprenti.maitreApprentissage.prenom + ' ' + apprenti.maitreApprentissage.nom}">
+                                                 Maître: Pierre MARTIN
+                                            </div>
+                                        </div>
+                                        <div th:unless="${apprenti.entreprise != null}">
+                                            <span class="text-muted small">
+                                                <i class="fas fa-minus me-1"></i>Non assigné
+                                            </span>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Formation -->
+                                    <td>
+                                        <span th:text="${apprenti.programme}" 
+                                              th:class="'badge ' + (${apprenti.programme == 'L1'} ? 'bg-success' : 
+                                                                   (${apprenti.programme == 'L2'} ? 'bg-warning text-dark' : 
+                                                                   (${apprenti.programme == 'L3'} ? 'bg-danger' : 'bg-info')))">
+                                            L2
+                                        </span>
+                                        <div th:if="${apprenti.majeure}" class="text-muted small mt-1" th:text="${apprenti.majeure}">Informatique</div>
+                                    </td>
+                                    
+                                    <!-- Tuteur -->
+                                    <td>
+                                        <div th:if="${apprenti.tuteurEnseignant != null}">
+                                            <div class="fw-medium small" th:text="${apprenti.tuteurEnseignant.prenom + ' ' + apprenti.tuteurEnseignant.nom}">Marie MARTIN</div>
+                                        </div>
+                                        <div th:unless="${apprenti.tuteurEnseignant != null}">
+                                            <span class="text-muted small">
+                                                <i class="fas fa-minus me-1"></i>Non assigné
+                                            </span>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Actions -->
+                                    <td class="text-end pe-4">
+                                        <div class="dropdown">
+                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item" th:href="@{/web/apprentis/{id}(id=${apprenti.id})}">
+                                                        <i class="fas fa-eye me-2 text-primary"></i>Voir les détails
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" th:href="@{/web/apprentis/{id}/modifier(id=${apprenti.id})}">
+                                                        <i class="fas fa-edit me-2 text-warning"></i>Modifier
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <button type="button" 
+                                                            class="dropdown-item text-danger btn-supprimer"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#modalSuppressionApprenti"
+                                                            th:data-apprenti-id="${apprenti.id}"
+                                                            th:data-apprenti-nom="${apprenti.prenom + ' ' + apprenti.nom}"
+                                                            th:data-apprenti-email="${apprenti.email}">
+                                                        <i class="fas fa-trash me-2"></i>Supprimer
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                <div class="card-footer bg-white border-top-0">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <small class="text-muted">
+                                <i class="fas fa-users me-1"></i>
+                                <strong th:text="${nombreApprentis}">0</strong> apprenti(s) au total
+                            </small>
+                        </div>
+                        <div class="col-auto">
+                            <small class="text-muted">
+                                <i class="fas fa-sync me-1"></i>
+                                Mis à jour : <span th:text="${#dates.format(#dates.createNow(), 'HH:mm')}">14:30</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- État vide -->
+            <div th:unless="${nombreApprentis > 0}" class="text-center py-5">
+                <div class="card border-0 bg-light">
+                    <div class="card-body py-5">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Aucun apprenti trouvé</h5>
+                        <p class="text-muted mb-4">Commencez par ajouter votre premier apprenti.</p>
+                        <a href="/web/apprentis/ajouter" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Ajouter un apprenti
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal unique de confirmation de suppression -->
+    <div class="modal fade" id="modalSuppressionApprenti" tabindex="-1" aria-labelledby="modalSuppressionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalSuppressionLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Confirmer la suppression
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer l'apprenti :</p>
+                    <div class="alert alert-warning">
+                        <strong id="apprenti-nom-modal">Nom de l'apprenti</strong><br>
+                        <small id="apprenti-email-modal">email@apprenti.com</small>
+                    </div>
+                    <p class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Cette action archivera l'apprenti (suppression logique).
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Annuler
+                    </button>
+                    <form id="form-suppression-apprenti" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i>Confirmer la suppression
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script pour auto-hide des alertes -->
+    <script>
+        // Auto-hide des alertes après 5 secondes
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+
+        // Gestion de la modale de suppression
+        document.addEventListener('DOMContentLoaded', function() {
+            const boutonsSupprimer = document.querySelectorAll('.btn-supprimer');
+            const formSuppression = document.getElementById('form-suppression-apprenti');
+            const nomModal = document.getElementById('apprenti-nom-modal');
+            const emailModal = document.getElementById('apprenti-email-modal');
+
+            boutonsSupprimer.forEach(function(bouton) {
+                bouton.addEventListener('click', function() {
+                    const apprentiId = this.getAttribute('data-apprenti-id');
+                    const apprentiNom = this.getAttribute('data-apprenti-nom');
+                    const apprentiEmail = this.getAttribute('data-apprenti-email');
+
+                    // Mettre à jour le contenu de la modale
+                    nomModal.textContent = apprentiNom;
+                    emailModal.textContent = apprentiEmail;
+                    
+                    // Mettre à jour l'action du formulaire
+                    formSuppression.action = '/web/apprentis/' + apprentiId + '/supprimer';
+                });
+            });
+
+            // Recherche en temps réel
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const filter = this.value.toLowerCase();
+                    const rows = document.querySelectorAll('.apprenti-row');
+                    
+                    rows.forEach(function(row) {
+                        const text = row.textContent.toLowerCase();
+                        row.style.display = text.includes(filter) ? '' : 'none';
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

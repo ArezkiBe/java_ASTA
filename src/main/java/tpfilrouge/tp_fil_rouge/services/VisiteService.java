@@ -37,6 +37,15 @@ public class VisiteService {
         visite.setDate(visiteDetails.getDate());
         visite.setFormat(visiteDetails.getFormat());
         visite.setCommentaires(visiteDetails.getCommentaires());
+        visite.setStatut(visiteDetails.getStatut()); // Mise à jour du statut
+        
+        // Mise à jour de l'apprenti et du commentaire tuteur si présents
+        if (visiteDetails.getApprenti() != null) {
+            visite.setApprenti(visiteDetails.getApprenti());
+        }
+        if (visiteDetails.getCommentaireTuteur() != null) {
+            visite.setCommentaireTuteur(visiteDetails.getCommentaireTuteur());
+        }
 
         return visiteRepository.save(visite);
     }

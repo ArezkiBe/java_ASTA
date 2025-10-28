@@ -1,0 +1,39 @@
+<!-- Fragment pour les fils d'Ariane (breadcrumb) -->
+<nav xmlns:th="http://www.thymeleaf.org" aria-label="breadcrumb">
+    
+    <!-- Breadcrumb pour les apprentis -->
+    <ol th:fragment="apprentis(current)" class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+        <li class="breadcrumb-item"><a href="/web/apprentis">Apprentis</a></li>
+        <li class="breadcrumb-item active" th:text="${current}">Courant</li>
+    </ol>
+    
+    <!-- Breadcrumb pour les maîtres -->
+    <ol th:fragment="maitres(current)" class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+        <li class="breadcrumb-item"><a href="/web/maitres">Maîtres d'Apprentissage</a></li>
+        <li class="breadcrumb-item active" th:text="${current}">Courant</li>
+    </ol>
+    
+    <!-- Breadcrumb pour les années -->
+    <ol th:fragment="annees(current)" class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+        <li class="breadcrumb-item"><a href="/web/annees">Années Académiques</a></li>
+        <li class="breadcrumb-item active" th:text="${current}">Courant</li>
+    </ol>
+    
+    <!-- Breadcrumb pour les évaluations -->
+    <ol th:fragment="evaluations(current)" class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Accueil</a></li>
+        <li class="breadcrumb-item"><a href="/web/evaluations"><i class="fas fa-clipboard-check"></i> Évaluations</a></li>
+        <li class="breadcrumb-item active" th:text="${current}">Courant</li>
+    </ol>
+    
+    <!-- Breadcrumb pour les visites -->
+    <ol th:fragment="visites(current)" class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Accueil</a></li>
+        <li class="breadcrumb-item"><a href="/web/visites"><i class="fas fa-map-marker-alt"></i> Visites</a></li>
+        <li class="breadcrumb-item active" th:text="${current}">Courant</li>
+    </ol>
+    
+</nav>

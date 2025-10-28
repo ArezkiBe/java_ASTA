@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="(${modeModification ? 'Modifier' : 'Ajouter'}) + ' - Maître d Apprentissage - ASTA'">Maître d'Apprentissage - ASTA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Navigation unifiée -->
+    <div th:replace="~{fragments/header :: navbar('maitres')}"></div>
+
+    <div class="container-fluid mt-4">
+        
+        <!-- Fil d'Ariane -->
+        <div th:replace="~{fragments/breadcrumb :: maitres(${modeModification ? 'Modifier' : 'Ajouter'})}"></div>
+
+        <!-- Messages Flash -->
+        <div th:replace="~{fragments/messages :: all}"></div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-chalkboard-teacher me-2"></i>
+                            <span th:text="${modeModification ? 'Modifier le Maître d Apprentissage' : 'Nouveau Maître d Apprentissage'}">Nouveau Maître d'Apprentissage</span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Formulaire -->
+                        <form th:object="${maitre}" 
+                              th:action="${modeModification ? '/web/maitres/' + maitre.id + '/modifier' : '/web/maitres/ajouter'}" 
+                              method="post" 
+                              class="needs-validation" 
+                              novalidate>
+                            
+                            <div class="row">
+                                <!-- Nom -->
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-floating">
+                                        <input type="text" 
+                                               th:field="*{nom}" 
+                                               class="form-control" 
+                                               id="nom" 
+                                               placeholder="Nom"
+                                               maxlength="100"
+                                               required
+                                               th:classappend="${#fields.hasErrors('nom')} ? 'is-invalid' : ''">
+                                        <label for="nom">Nom *</label>
+                                        <div th:if="${#fields.hasErrors('nom')}" class="invalid-feedback">
+                                            <span th:errors="*{nom}">Erreur nom</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Prénom -->
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-floating">
+                                        <input type="text" 
+                                               th:field="*{prenom}" 
+                                               class="form-control" 
+                                               id="prenom" 
+                                               placeholder="Prénom"
+                                               maxlength="100"
+                                               required
+                                               th:classappend="${#fields.hasErrors('prenom')} ? 'is-invalid' : ''">
+                                        <label for="prenom">Prénom *</label>
+                                        <div th:if="${#fields.hasErrors('prenom')}" class="invalid-feedback">
+                                            <span th:errors="*{prenom}">Erreur prénom</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Poste -->
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-floating">
+                                        <input type="text" 
+                                               th:field="*{poste}" 
+                                               class="form-control" 
+                                               id="poste" 
+                                               placeholder="Poste occupé"
+                                               maxlength="100"
+                                               th:classappend="${#fields.hasErrors('poste')} ? 'is-invalid' : ''">
+                                        <label for="poste">Poste occupé</label>
+                                        <div th:if="${#fields.hasErrors('poste')}" class="invalid-feedback">
+                                            <span th:errors="*{poste}">Erreur poste</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-floating">
+                                        <input type="email" 
+                                               th:field="*{email}" 
+                                               class="form-control" 
+                                               id="email" 
+                                               placeholder="Email professionnel"
+                                               maxlength="100"
+                                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''">
+                                        <label for="email">Email professionnel</label>
+                                        <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback">
+                                            <span th:errors="*{email}">Erreur email</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Téléphone -->
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-floating">
+                                        <input type="tel" 
+                                               th:field="*{telephone}" 
+                                               class="form-control" 
+                                               id="telephone" 
+                                               placeholder="Téléphone"
+                                               maxlength="15"
+                                               pattern="[0-9+\.\-\s\(\)]+"
+                                               th:classappend="${#fields.hasErrors('telephone')} ? 'is-invalid' : ''">
+                                        <label for="telephone">Téléphone</label>
+                                        <div th:if="${#fields.hasErrors('telephone')}" class="invalid-feedback">
+                                            <span th:errors="*{telephone}">Erreur téléphone</span>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Format accepté : 01.23.45.67.89 ou +33 1 23 45 67 89
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Remarques -->
+                            <div class="mb-4">
+                                <div class="form-floating">
+                                    <textarea th:field="*{remarques}" 
+                                              class="form-control" 
+                                              id="remarques" 
+                                              placeholder="Remarques et observations"
+                                              maxlength="500"
+                                              rows="4"
+                                              style="height: 120px"
+                                              th:classappend="${#fields.hasErrors('remarques')} ? 'is-invalid' : ''"></textarea>
+                                    <label for="remarques">Remarques et observations</label>
+                                    <div th:if="${#fields.hasErrors('remarques')}" class="invalid-feedback">
+                                        <span th:errors="*{remarques}">Erreur remarques</span>
+                                    </div>
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Informations complémentaires sur le maître d'apprentissage (spécialités, disponibilités, etc.)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Information sur les champs obligatoires -->
+                            <div class="alert alert-light border" role="alert">
+                                <i class="fas fa-info-circle text-primary me-2"></i>
+                                <strong>Information :</strong> Les champs marqués d'un astérisque (*) sont obligatoires.
+                            </div>
+
+                            <!-- Boutons d'action -->
+                            <div class="d-flex justify-content-between pt-3">
+                                <a href="/web/maitres" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                                </a>
+                                <div>
+                                    <button type="button" class="btn btn-outline-warning me-2" onclick="resetForm()">
+                                        <i class="fas fa-undo me-2"></i>Réinitialiser
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>
+                                        <span th:text="${modeModification ? 'Modifier' : 'Créer'}">Créer</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Validation côté client
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+
+        // Fonction de réinitialisation du formulaire
+        function resetForm() {
+            if (confirm('Êtes-vous sûr de vouloir réinitialiser le formulaire ?')) {
+                document.querySelector('form').reset();
+                document.querySelector('form').classList.remove('was-validated');
+            }
+        }
+
+        // Format automatique du téléphone
+        document.getElementById('telephone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.replace(/(\d{2})(?=\d)/g, '$1.');
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>

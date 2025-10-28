@@ -29,7 +29,7 @@ public class Apprenti {
     private String telephone;
 
     @Column(name = "programme", length = 50)
-    private String programme = "M2-PRO";
+    private String programme = "L1";
 
     @Column(name = "majeure", length = 100)
     private String majeure = "Digital Transformation";

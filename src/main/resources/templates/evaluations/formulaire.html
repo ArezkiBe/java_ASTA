@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${modeCreation ? 'Nouvelle Évaluation - ASTA' : 'Modifier Évaluation - ASTA'}">Évaluation - ASTA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Navigation unifiée -->
+    <div th:replace="~{fragments/header :: navbar('evaluations')}"></div>
+
+    <div class="container-fluid mt-4">
+        
+        <!-- Fil d'Ariane -->
+        <div th:replace="~{fragments/breadcrumb :: evaluations(${modeCreation ? 'Nouvelle Évaluation' : 'Modifier Évaluation'})}"></div>
+
+        <!-- Messages flash -->
+        <div th:replace="~{fragments/messages :: all}"></div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clipboard-check me-2"></i>
+                            <span th:text="${modeCreation ? 'Créer une Nouvelle Évaluation' : 'Modifier l''Évaluation'}">Formulaire Évaluation</span>
+                        </h5>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form th:action="${modeCreation ? '/web/evaluations' : '/web/evaluations/' + evaluation.id}" 
+                              method="post" 
+                              th:object="${evaluation}" 
+                              class="needs-validation" 
+                              novalidate>
+                            
+                            <div class="row">
+                                <!-- Type d'évaluation -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="type" class="form-label">
+                                        Type d'Évaluation <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" 
+                                            id="type" 
+                                            th:field="*{type}" 
+                                            required>
+                                        <option value="">-- Sélectionner le type --</option>
+                                        <option value="Memoire/Rapport">Mémoire/Rapport</option>
+                                        <option value="Soutenance">Soutenance</option>
+                                        <option value="Projet">Projet</option>
+                                        <option value="Stage">Stage</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Veuillez sélectionner un type d'évaluation.
+                                    </div>
+                                </div>
+
+                                <!-- Note finale -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="noteFinale" class="form-label">
+                                        Note Finale (/20)
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="noteFinale" 
+                                           th:field="*{noteFinale}" 
+                                           min="0" 
+                                           max="20" 
+                                           step="0.1"
+                                           placeholder="Ex: 15.5">
+                                    <div class="form-text">Note sur 20, optionnel</div>
+                                </div>
+                            </div>
+
+                            <!-- Thème/Sujet -->
+                            <div class="mb-3">
+                                <label for="themeSujet" class="form-label">
+                                    Thème/Sujet <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="themeSujet" 
+                                       th:field="*{themeSujet}" 
+                                       placeholder="Ex: Développement d'une application web"
+                                       required>
+                                <div class="invalid-feedback">
+                                    Veuillez saisir le thème ou sujet de l'évaluation.
+                                </div>
+                            </div>
+
+                            <!-- Date de soutenance -->
+                            <div class="mb-3">
+                                <label for="dateSoutenance" class="form-label">
+                                    Date de Soutenance
+                                </label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       id="dateSoutenance" 
+                                       th:field="*{dateSoutenance}">
+                                <div class="form-text">Date prévue ou réalisée de la soutenance (optionnel)</div>
+                            </div>
+
+                            <!-- Commentaires -->
+                            <div class="mb-4">
+                                <label for="commentaires" class="form-label">
+                                    Commentaires et Observations
+                                </label>
+                                <textarea class="form-control" 
+                                          id="commentaires" 
+                                          th:field="*{commentaires}" 
+                                          rows="4"
+                                          placeholder="Commentaires sur l'évaluation, points forts, axes d'amélioration..."></textarea>
+                                <div class="form-text">Maximum 500 caractères</div>
+                            </div>
+
+                            <!-- Boutons d'action -->
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/web/evaluations}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                                </a>
+                                
+                                <div>
+                                    <button type="button" 
+                                            class="btn btn-outline-secondary me-2" 
+                                            onclick="resetForm()">
+                                        <i class="fas fa-undo me-2"></i>Réinitialiser
+                                    </button>
+                                    <button type="submit" 
+                                            class="btn btn-primary">
+                                        <i th:class="${modeCreation ? 'fas fa-save' : 'fas fa-check'} + ' me-2'"></i>
+                                        <span th:text="${modeCreation ? 'Créer l\'Évaluation' : 'Mettre à Jour'}">Enregistrer</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Aide contextuelle -->
+                <div class="card mt-3" th:if="${modeCreation}">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Aide
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Types d'évaluation :</h6>
+                                <ul class="small">
+                                    <li><strong>Mémoire/Rapport :</strong> Évaluation écrite</li>
+                                    <li><strong>Soutenance :</strong> Présentation orale</li>
+                                    <li><strong>Projet :</strong> Réalisation pratique</li>
+                                    <li><strong>Stage :</strong> Évaluation de stage</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Barème de notation :</h6>
+                                <ul class="small">
+                                    <li><strong>16-20 :</strong> Très bien</li>
+                                    <li><strong>14-16 :</strong> Bien</li>
+                                    <li><strong>12-14 :</strong> Assez bien</li>
+                                    <li><strong>0-12 :</strong> Insuffisant</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Scripts de validation -->
+    <script>
+        // Validation Bootstrap
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+
+        // Fonction pour réinitialiser le formulaire
+        function resetForm() {
+            if (confirm('Êtes-vous sûr de vouloir réinitialiser le formulaire ?')) {
+                document.querySelector('form').reset();
+                document.querySelector('form').classList.remove('was-validated');
+            }
+        }
+
+        // Validation en temps réel de la note
+        document.getElementById('noteFinale').addEventListener('input', function() {
+            const note = parseFloat(this.value);
+            if (note < 0) this.value = 0;
+            if (note > 20) this.value = 20;
+        });
+    </script>
+</body>
+</html>

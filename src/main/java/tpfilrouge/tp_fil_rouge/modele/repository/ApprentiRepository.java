@@ -36,7 +36,7 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
         FROM apprenti a
         INNER JOIN annee_academique aa ON a.annee_academique_id = aa.id
         LEFT JOIN entreprise e ON a.entreprise_id = e.id
-        WHERE a.programme IN ('I1', 'I2', 'I3', 'M2-PRO')
+        WHERE a.programme IN ('L1', 'L2', 'L3')
         GROUP BY a.programme, aa.annee, e.raison_sociale
         HAVING COUNT(*) >= 1
         ORDER BY aa.annee DESC, a.programme ASC, nombre_apprentis DESC
@@ -55,4 +55,9 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
     // Recherche par mission (Exigence 7.1.3)
     @Query("SELECT a FROM Apprenti a JOIN a.mission m WHERE LOWER(m.motsCles) LIKE LOWER(CONCAT('%', :motCle, '%')) AND a.estArchive = false")
     List<Apprenti> findByMissionMotsClesContainingAndEstArchiveFalse(String motCle);
+    
+    // Méthodes pour la gestion académique
+    Long countByProgrammeAndEstArchiveFalse(String programme);
+    
+    List<Apprenti> findByEstArchiveFalse();
 }

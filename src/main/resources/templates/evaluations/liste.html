@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Évaluations - ASTA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Navigation unifiée -->
+    <div th:replace="~{fragments/header :: navbar('evaluations')}"></div>
+
+    <div class="container-fluid mt-4">
+        
+        <!-- Messages flash -->
+        <div th:replace="~{fragments/messages :: all}"></div>
+
+        <!-- En-tête avec titre et bouton d'ajout -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 mb-1">
+                            <i class="fas fa-clipboard-check text-primary me-2"></i>
+                            Gestion des Évaluations
+                        </h1>
+                        <p class="text-muted mb-0">Gérez les évaluations, soutenances et notes des apprentis</p>
+                    </div>
+                    <a th:href="@{/web/evaluations/nouveau}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Nouvelle Évaluation
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des évaluations -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Liste des Évaluations
+                    <span class="badge bg-primary ms-2" th:text="${evaluations?.size() ?: 0}">0</span>
+                </h5>
+            </div>
+            
+            <div class="card-body p-0">
+                <div th:if="${evaluations == null or evaluations.empty}" class="text-center py-5">
+                    <div class="text-muted">
+                        <i class="fas fa-clipboard-list fa-3x mb-3 opacity-50"></i>
+                        <p class="h5">Aucune évaluation trouvée</p>
+                        <p>Commencez par créer votre première évaluation.</p>
+                    </div>
+                </div>
+                
+                <div th:if="${evaluations != null and not evaluations.empty}" class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Type</th>
+                                <th scope="col">Thème/Sujet</th>
+                                <th scope="col">Note Finale</th>
+                                <th scope="col">Date Soutenance</th>
+                                <th scope="col">Commentaires</th>
+                                <th scope="col" width="150">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="evaluation : ${evaluations}" class="align-middle">
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${evaluation.type == 'Soutenance'} ? 'bg-warning' : 'bg-info'"
+                                          th:text="${evaluation.type ?: 'Non défini'}">Type</span>
+                                </td>
+                                <td>
+                                    <div class="fw-medium" th:text="${evaluation.themeSujet ?: 'Non défini'}">Thème</div>
+                                </td>
+                                <td>
+                                    <span th:if="${evaluation.noteFinale != null}" 
+                                          class="badge"
+                                          th:classappend="${evaluation.noteFinale >= 16} ? 'bg-success' : (${evaluation.noteFinale >= 12} ? 'bg-warning' : 'bg-danger')"
+                                          th:text="${evaluation.noteFinale + '/20'}">Note</span>
+                                    <span th:unless="${evaluation.noteFinale != null}" class="text-muted">Non notée</span>
+                                </td>
+                                <td>
+                                    <span th:if="${evaluation.dateSoutenance != null}" 
+                                          th:text="${evaluation.dateSoutenance}">Date</span>
+                                    <span th:unless="${evaluation.dateSoutenance != null}" class="text-muted">Non programmée</span>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 200px;" 
+                                         th:text="${evaluation.commentaires ?: 'Aucun commentaire'}" 
+                                         th:title="${evaluation.commentaires}">Commentaires</div>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a th:href="@{/web/evaluations/{id}(id=${evaluation.id})}" 
+                                           class="btn btn-outline-info" 
+                                           title="Voir détails">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a th:href="@{/web/evaluations/{id}/modifier(id=${evaluation.id})}" 
+                                           class="btn btn-outline-warning" 
+                                           title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form th:action="@{/web/evaluations/{id}/supprimer(id=${evaluation.id})}" 
+                                              method="post" class="d-inline">
+                                            <button type="submit" 
+                                                    class="btn btn-outline-danger" 
+                                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette évaluation ?')"
+                                                    title="Supprimer">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques rapides -->
+        <div class="row mt-4" th:if="${evaluations != null and not evaluations.empty}">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="text-primary" th:text="${evaluations.size()}">0</h3>
+                        <p class="card-text text-muted">Total Évaluations</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="text-warning" th:text="${#lists.size(evaluations.?[type == 'Soutenance'])}">0</h3>
+                        <p class="card-text text-muted">Soutenances</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="text-info" th:text="${#lists.size(evaluations.?[type == 'Memoire/Rapport'])}">0</h3>
+                        <p class="card-text text-muted">Mémoires/Rapports</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="text-success" th:text="${#lists.size(evaluations.?[noteFinale != null and noteFinale >= 12])}">0</h3>
+                        <p class="card-text text-muted">Validées (≥12)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

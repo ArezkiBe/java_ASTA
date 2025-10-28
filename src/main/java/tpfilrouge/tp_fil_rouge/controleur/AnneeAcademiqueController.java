@@ -8,6 +8,7 @@ import tpfilrouge.tp_fil_rouge.modele.entite.AnneeAcademique;
 import tpfilrouge.tp_fil_rouge.services.AnneeAcademiqueService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -60,14 +61,15 @@ public class AnneeAcademiqueController {
         }
     }
 
+    /**
+     * ENDPOINT DÉSACTIVÉ POUR SÉCURITÉ
+     * La définition manuelle de l'année courante n'est plus autorisée.
+     * Utilisez /passer-annee-suivante pour une transition sécurisée.
+     */
     @PutMapping("/{id}/definir-courante")
-    public ResponseEntity<AnneeAcademique> definirAnneeCourante(@PathVariable Integer id) {
-        try {
-            AnneeAcademique annee = anneeAcademiqueService.definirNouvelleAnneeCourante(id);
-            return ResponseEntity.ok(annee);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+    public ResponseEntity<String> definirAnneeCourante(@PathVariable Integer id) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body("Action non autorisée. Utilisez /passer-annee-suivante pour une progression séquentielle.");
     }
 
     @DeleteMapping("/{id}")
@@ -88,6 +90,27 @@ public class AnneeAcademiqueController {
                 .body(anneeAcademiqueService.creerNouvelleAnnee(annee));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    /**
+     * SEULE MÉTHODE AUTORISÉE pour changer d'année académique
+     * Valide automatiquement que la transition est séquentielle (pas de retour, pas de saut)
+     */
+    @PostMapping("/passer-annee-suivante")
+    public ResponseEntity<?> passerAnneeSuivante(@RequestParam String nouvelleAnnee) {
+        try {
+            AnneeAcademique annee = anneeAcademiqueService.passerAAnneeSuivante(nouvelleAnnee);
+            return ResponseEntity.ok(annee);
+        } catch (RuntimeException e) {
+            // Retourner l'erreur de validation avec détails
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "Transition non autorisée",
+                "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Erreur interne", "message", e.getMessage()));
         }
     }
 }
