@@ -125,15 +125,6 @@ public class ApprentiService {
         );
     }
 
-    // Méthode simplifiée pour promouvoir sans changer d'année (rétrocompatibilité)
-    @Transactional
-    public void promouvoirEtArchiverApprentisNouvelleAnnee() {
-        AnneeAcademique anneeCourante = anneeAcademiqueRepository.findByEstCouranteTrue()
-            .orElseThrow(() -> new RuntimeException("Année académique courante non trouvée"));
-
-        promouvoirEtArchiverApprentisNouvelleAnnee(anneeCourante.getId());
-    }
-
     // Méthodes pour la gestion des années académiques
     public long compterApprentisByProgramme(String programme) {
         return apprentiRepository.countByProgrammeAndEstArchiveFalse(programme);

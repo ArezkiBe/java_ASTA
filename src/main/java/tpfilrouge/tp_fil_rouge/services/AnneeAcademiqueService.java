@@ -51,20 +51,6 @@ public class AnneeAcademiqueService {
     public Optional<AnneeAcademique> getAnneeCourante() {
         return anneeAcademiqueRepository.findByEstCouranteTrue();
     }
-
-    /**
-     * MÉTHODE DÉPRÉCIÉE ET DÉSACTIVÉE
-     * Ancienne méthode non sécurisée pour définir l'année courante
-     */
-    @Deprecated
-    public AnneeAcademique definirNouvelleAnneeCourante(Integer nouvelleAnneeId) {
-        throw new UnsupportedOperationException(
-            "La définition manuelle de l'année courante n'est plus autorisée. " +
-            "Utilisez passerAAnneeSuivante() pour une progression séquentielle sécurisée."
-        );
-    }
-
-    // Gestion des années académiques (Exigence 6)
     
     /** 
      * @Transactional justifiée : Cette méthode effectue 2 opérations qui doivent être atomiques :
@@ -85,19 +71,6 @@ public class AnneeAcademiqueService {
     
     public boolean existsByAnnee(String annee) {
         return anneeAcademiqueRepository.existsByAnnee(annee);
-    }
-    
-    /**
-     * MÉTHODE DÉPRÉCIÉE ET DÉSACTIVÉE
-     * La définition manuelle de l'année courante n'est plus autorisée.
-     * Utilisez passerAAnneeSuivante() pour une transition sécurisée.
-     */
-    @Deprecated
-    public AnneeAcademique definirAnneeCourante(Integer anneeId) {
-        throw new UnsupportedOperationException(
-            "La définition manuelle de l'année courante n'est plus autorisée. " +
-            "Utilisez passerAAnneeSuivante() pour une progression séquentielle sécurisée."
-        );
     }
     
     /**

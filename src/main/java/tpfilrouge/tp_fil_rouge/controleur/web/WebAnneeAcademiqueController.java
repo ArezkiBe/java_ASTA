@@ -86,39 +86,6 @@ public class WebAnneeAcademiqueController {
     }
     
     /**
-     * MÉTHODE DÉSACTIVÉE - Création manuelle d'années
-     * Utiliser uniquement la promotion automatique qui gère la création
-     */
-    @PostMapping("/creer")
-    public String creerNouvelleAnnee(@RequestParam String annee,
-                                   RedirectAttributes redirectAttributes) {
-        
-        logger.warn("Tentative de création manuelle d'année : {} - ACTION BLOQUÉE", annee);
-        
-        redirectAttributes.addFlashAttribute("erreur", 
-            "🔒 Action non autorisée ! Utilisez uniquement la 'Promotion Automatique' pour créer de nouvelles années.");
-        
-        return "redirect:/web/annees";
-    }
-    
-    /**
-     * MÉTHODE DÉSACTIVÉE - Définition manuelle année courante
-     * Le système ne permet plus le choix manuel pour éviter les incohérences
-     */
-    @PostMapping("/{id}/definir-courante")
-    public String definirAnneeCourante(@PathVariable Integer id,
-                                     RedirectAttributes redirectAttributes) {
-        
-        logger.warn("Tentative de définition manuelle année courante ID {} - ACTION BLOQUÉE", id);
-        
-        redirectAttributes.addFlashAttribute("erreur", 
-            "🔒 Sécurité : Le choix manuel de l'année courante est désactivé. " +
-            "Utilisez la 'Promotion Automatique' pour progresser de manière sécurisée.");
-        
-        return "redirect:/web/annees";
-    }
-    
-    /**
      * 🎓 SEULE MÉTHODE AUTORISÉE - Promotion Automatique Sécurisée
      * 
      * Fonctionnalités :
@@ -155,23 +122,6 @@ public class WebAnneeAcademiqueController {
             redirectAttributes.addFlashAttribute("erreur", 
                 "⚠️ Erreur technique lors de la promotion automatique. Contactez l'administrateur.");
         }
-        
-        return "redirect:/web/annees";
-    }
-
-    /**
-     * MÉTHODE DÉPRÉCIÉE - Promotion manuelle avec choix d'année
-     * Cette méthode permettait de choisir n'importe quelle année cible (dangereux)
-     * Remplacée par passerAnneeSuivante() qui force la progression séquentielle
-     */
-    @PostMapping("/promouvoir")
-    public String promouvoirApprentis(@RequestParam Integer nouvelleAnneeId, RedirectAttributes redirectAttributes) {
-        
-        logger.warn("❌ Tentative d'utilisation de l'ancienne méthode de promotion (ID: {}) - ACTION BLOQUÉE", nouvelleAnneeId);
-        
-        redirectAttributes.addFlashAttribute("erreur", 
-            "🔒 Méthode dépréciée ! La promotion manuelle avec choix d'année n'est plus autorisée.\n" +
-            "Utilisez uniquement la 'Promotion Automatique' pour garantir la cohérence du système.");
         
         return "redirect:/web/annees";
     }

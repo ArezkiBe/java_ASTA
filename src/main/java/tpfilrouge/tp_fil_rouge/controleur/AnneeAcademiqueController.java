@@ -61,17 +61,6 @@ public class AnneeAcademiqueController {
         }
     }
 
-    /**
-     * ENDPOINT DÉSACTIVÉ POUR SÉCURITÉ
-     * La définition manuelle de l'année courante n'est plus autorisée.
-     * Utilisez /passer-annee-suivante pour une transition sécurisée.
-     */
-    @PutMapping("/{id}/definir-courante")
-    public ResponseEntity<String> definirAnneeCourante(@PathVariable Integer id) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-            .body("Action non autorisée. Utilisez /passer-annee-suivante pour une progression séquentielle.");
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAnnee(@PathVariable Integer id) {
         try {
