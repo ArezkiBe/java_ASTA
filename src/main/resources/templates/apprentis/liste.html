@@ -19,54 +19,53 @@
             <!-- Messages flash -->
             <div th:replace="~{fragments/messages :: all}"></div>
 
-            <div th:if="${erreur}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                <span th:text="${erreur}">Message d'erreur</span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-
             <!-- En-tête de la page -->
-            <!-- En-tête de la page -->
-            <div class="page-header mb-4">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-2">
-                                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Accueil</a></li>
-                                <li class="breadcrumb-item active">Apprentis</li>
-                            </ol>
-                        </nav>
-                        <h1 class="page-title mb-2">Liste des Apprentis</h1>
-                        <p class="page-subtitle text-muted mb-0">Gestion des étudiants en apprentissage</p>
-                    </div>
-                    <div class="col-auto">
+            <div class="row align-items-center mb-4">
+                <div class="col">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-2">
+                            <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Accueil</a></li>
+                            <li class="breadcrumb-item active">Apprentis</li>
+                        </ol>
+                    </nav>
+                    <h1 class="h2 mb-1">Liste des Apprentis</h1>
+                    <p class="text-muted mb-0">
+                        <span th:if="${anneeCourante}">
+                            Apprentis actifs - Année courante: <strong th:text="${anneeCourante.annee}">2024-2025</strong>
+                        </span>
+                        <span th:unless="${anneeCourante}">
+                            Tous les apprentis actifs (non archivés)
+                        </span>
+                    </p>
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group" role="group">
                         <a href="/web/apprentis/ajouter" class="btn btn-primary">
                             <i class="fas fa-plus me-2"></i>Nouvel apprenti
+                        </a>
+                        <a href="/web/apprentis/importer" class="btn btn-outline-primary">
+                            <i class="fas fa-file-csv me-2"></i>Import CSV
                         </a>
                     </div>
                 </div>
             </div>
 
-        <!-- Statistiques rapides -->
-        <div class="row mb-4" th:if="${nombreApprentis > 0}">
-            <div class="col-md-3">
-                <div class="card bg-info text-white">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-users fa-2x me-3"></i>
-                            <div>
-                                <h4 class="card-title" th:text="${nombreApprentis}">0</h4>
-                                <p class="card-text">Apprentis actifs</p>
-                            </div>
+            <!-- Statistiques rapides -->
+            <div class="row mb-4" th:if="${nombreApprentis > 0}">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-2x mb-2"></i>
+                            <h4 class="mb-1" th:text="${nombreApprentis}">0</h4>
+                            <small>Apprentis actifs</small>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Contenu principal -->
-        <div class="row">
-            <div class="col-12">
+            <!-- Contenu principal -->
+            <div class="row">
+                <div class="col-12">
                 <!-- Message si aucun apprenti (Exigence #2.1) -->
                 <div th:if="${nombreApprentis == 0}" class="alert alert-warning text-center py-5">
                     <i class="fas fa-exclamation-triangle fa-3x mb-3 text-warning"></i>
@@ -276,6 +275,7 @@
                         <i class="fas fa-times me-1"></i>Annuler
                     </button>
                     <form id="form-suppression-apprenti" method="post" style="display: inline;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <button type="submit" class="btn btn-danger">
                             <i class="fas fa-trash me-1"></i>Confirmer la suppression
                         </button>

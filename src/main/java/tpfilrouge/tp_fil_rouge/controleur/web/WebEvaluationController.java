@@ -180,7 +180,7 @@ public class WebEvaluationController {
             
         } catch (Exception e) {
             logger.error("Erreur lors de la suppression de l'évaluation {}", id, e);
-            redirectAttributes.addFlashAttribute("erreur", "Erreur lors de la suppression de l'évaluation");
+            redirectAttributes.addFlashAttribute("erreur", e.getMessage());
         }
         
         return "redirect:/web/evaluations";

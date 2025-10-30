@@ -82,10 +82,7 @@ public class AnneeAcademiqueController {
         }
     }
     
-    /**
-     * SEULE MÉTHODE AUTORISÉE pour changer d'année académique
-     * Valide automatiquement que la transition est séquentielle (pas de retour, pas de saut)
-     */
+
     @PostMapping("/passer-annee-suivante")
     public ResponseEntity<?> passerAnneeSuivante(@RequestParam String nouvelleAnnee) {
         try {

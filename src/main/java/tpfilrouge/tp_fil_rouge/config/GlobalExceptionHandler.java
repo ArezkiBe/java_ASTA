@@ -14,16 +14,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Gestionnaire global des exceptions pour l'application
- * Conforme aux exigences ALTN72 - Clean Code - Gestion des exceptions
- *
- * Applique les bonnes pratiques :
- * 1. Catche en priorité les exceptions spécifiques
- * 2. Utilise un framework de logging au lieu de printStackTrace()
- * 3. Messages clairs et explicites en français
- * 4. Exceptions personnalisées avec messages pertinents
- */
 @ControllerAdvice
 public class GlobalExceptionHandler {
     /**
@@ -56,10 +46,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
-    /**
-     * ÉTAPE 2 - Gestion des erreurs de validation
-     * Avec messages clairs pour chaque champ en erreur
-     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(
             MethodArgumentNotValidException ex, WebRequest request) {
@@ -135,8 +121,6 @@ public class GlobalExceptionHandler {
             resourcePath.contains("apple-touch-icon") ||
             resourcePath.contains("manifest.json"))) {
             
-            // Log en niveau DEBUG seulement pour ne pas polluer les logs            
-            // Retourner 404 silencieusement sans créer d'erreur visible
             return ResponseEntity.notFound().build();
         }
 

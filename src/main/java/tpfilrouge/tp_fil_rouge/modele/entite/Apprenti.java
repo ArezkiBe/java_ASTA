@@ -1,6 +1,9 @@
 package tpfilrouge.tp_fil_rouge.modele.entite;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -16,15 +19,20 @@ public class Apprenti {
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @NotBlank(message = "Le nom est obligatoire")
     @Column(name = "nom", nullable = false, length = 100)
     private String nom;
 
+    @NotBlank(message = "Le prénom est obligatoire")
     @Column(name = "prenom", nullable = false, length = 100)
     private String prenom;
 
+    @NotBlank(message = "L'email est obligatoire")
+    @Email(message = "L'email doit être valide")
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
+    @Pattern(regexp = "^[0-9+\\-\\s().]*$", message = "Le téléphone ne peut contenir que des chiffres, espaces, +, -, ( ou )")
     @Column(name = "telephone", length = 15)
     private String telephone;
 

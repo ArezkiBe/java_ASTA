@@ -24,27 +24,24 @@
             </a>
         </div>
 
-        <!-- Titre principal -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <h2>
-                    <i class="fas fa-search me-2 text-primary"></i>
-                    Recherche d'Apprentis
-                </h2>
-                <p class="text-muted">Utilisez les formulaires ci-dessous pour rechercher des apprentis selon différents critères</p>
-            </div>
+        <!-- En-tête -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">
+                <i class="fas fa-search me-2 text-primary"></i>
+                Recherche d'Apprentis
+            </h2>
         </div>
 
         <div class="row">
             <!-- Colonne des formulaires de recherche -->
-            <div class="col-md-4">
+            <div class="col-lg-3">
                 
                 <!-- Recherche par nom -->
-                <div class="card mb-3">
-                    <div class="card-header bg-primary text-white">
-                        <h6 class="mb-0">
-                            <i class="fas fa-user me-2"></i>
-                            Rechercher par nom
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-dark">
+                            <i class="fas fa-user me-2 text-primary"></i>
+                            Par nom
                         </h6>
                     </div>
                     <div class="card-body">
@@ -56,7 +53,7 @@
                                        placeholder="Nom de l'apprenti"
                                        required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">
+                            <button type="submit" class="btn btn-outline-primary w-100">
                                 <i class="fas fa-search me-2"></i>Rechercher
                             </button>
                         </form>
@@ -64,11 +61,11 @@
                 </div>
 
                 <!-- Recherche par entreprise -->
-                <div class="card mb-3">
-                    <div class="card-header bg-success text-white">
-                        <h6 class="mb-0">
-                            <i class="fas fa-building me-2"></i>
-                            Rechercher par entreprise
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-dark">
+                            <i class="fas fa-building me-2 text-success"></i>
+                            Par entreprise
                         </h6>
                     </div>
                     <div class="card-body">
@@ -81,7 +78,7 @@
                                             th:text="${entreprise.raisonSociale}">Entreprise</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-success w-100">
+                            <button type="submit" class="btn btn-outline-success w-100">
                                 <i class="fas fa-search me-2"></i>Rechercher
                             </button>
                         </form>
@@ -89,11 +86,11 @@
                 </div>
 
                 <!-- Recherche par mission -->
-                <div class="card mb-3">
-                    <div class="card-header bg-warning text-white">
-                        <h6 class="mb-0">
-                            <i class="fas fa-briefcase me-2"></i>
-                            Rechercher par mission
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-dark">
+                            <i class="fas fa-briefcase me-2 text-warning"></i>
+                            Par mission
                         </h6>
                     </div>
                     <div class="card-body">
@@ -106,7 +103,7 @@
                                        required>
                                 <div class="form-text">Ex: développement, web, mobile, etc.</div>
                             </div>
-                            <button type="submit" class="btn btn-warning w-100 text-white">
+                            <button type="submit" class="btn btn-outline-warning w-100">
                                 <i class="fas fa-search me-2"></i>Rechercher
                             </button>
                         </form>
@@ -114,11 +111,11 @@
                 </div>
 
                 <!-- Recherche par année -->
-                <div class="card mb-3">
-                    <div class="card-header bg-info text-white">
-                        <h6 class="mb-0">
-                            <i class="fas fa-calendar-alt me-2"></i>
-                            Rechercher par année
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-dark">
+                            <i class="fas fa-calendar-alt me-2 text-info"></i>
+                            Par année
                         </h6>
                     </div>
                     <div class="card-body">
@@ -131,7 +128,7 @@
                                             th:text="${anneeAcad.annee}">2024-2025</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-info w-100">
+                            <button type="submit" class="btn btn-outline-info w-100">
                                 <i class="fas fa-search me-2"></i>Rechercher
                             </button>
                         </form>
@@ -139,21 +136,19 @@
                 </div>
 
                 <!-- Réinitialiser -->
-                <div class="card">
-                    <div class="card-body text-center">
-                        <form th:action="@{/web/recherche/reset}" method="post">
-                            <button type="submit" class="btn btn-outline-secondary">
-                                <i class="fas fa-eraser me-2"></i>Réinitialiser
-                            </button>
-                        </form>
-                    </div>
+                <div class="text-center">
+                    <form th:action="@{/web/recherche/reset}" method="post">
+                        <button type="submit" class="btn btn-outline-secondary">
+                            <i class="fas fa-eraser me-2"></i>Réinitialiser la recherche
+                        </button>
+                    </form>
                 </div>
 
             </div>
 
             <!-- Colonne des résultats -->
-            <div class="col-md-8">
-                <div class="card">
+            <div class="col-lg-9">
+                <div class="card shadow-sm">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="fas fa-list me-2"></i>
@@ -168,9 +163,9 @@
                     <div class="card-body">
                         <!-- Message initial -->
                         <div th:if="${!rechercheEffectuee}" class="text-center py-5">
-                            <i class="fas fa-search text-muted mb-3" style="font-size: 4rem;"></i>
-                            <h5 class="text-muted">Effectuez une recherche</h5>
-                            <p class="text-muted">Utilisez les formulaires de recherche pour trouver des apprentis</p>
+                            <i class="fas fa-search text-muted mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="text-muted">Aucune recherche effectuée</h5>
+                            <p class="text-muted">Sélectionnez un critère de recherche pour commencer</p>
                         </div>
 
                         <!-- Informations sur la recherche effectuée -->
@@ -238,32 +233,6 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Aide contextuelle -->
-                <div class="card mt-3">
-                    <div class="card-header bg-light">
-                        <h6 class="mb-0">
-                            <i class="fas fa-question-circle me-2"></i>
-                            Aide à la recherche
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <ul class="list-unstyled small">
-                                    <li><i class="fas fa-user text-primary me-2"></i><strong>Nom :</strong> Recherche partielle (ex: "Dup" trouve "Dupont")</li>
-                                    <li><i class="fas fa-building text-success me-2"></i><strong>Entreprise :</strong> Tous les apprentis de l'entreprise</li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <ul class="list-unstyled small">
-                                    <li><i class="fas fa-briefcase text-warning me-2"></i><strong>Mission :</strong> Recherche dans les mots-clés</li>
-                                    <li><i class="fas fa-calendar text-info me-2"></i><strong>Année :</strong> Apprentis non archivés de l'année</li>
-                                </ul>
                             </div>
                         </div>
                     </div>

@@ -13,140 +13,137 @@
     <!-- Navigation unifiée -->
     <div th:replace="~{fragments/header :: navbar('maitres')}"></div>
 
-    <div class="container-fluid mt-4">
-        
-        <!-- Fil d'Ariane -->
-        <div th:replace="~{fragments/breadcrumb :: maitres(${maitre.prenom + ' ' + maitre.nom})}"></div>
+    <div class="content-wrapper">
+        <div class="container-fluid py-4">
+            
+            <!-- Fil d'Ariane -->
+            <div th:replace="~{fragments/breadcrumb :: maitres(${maitre.prenom + ' ' + maitre.nom})}"></div>
 
-        <!-- Messages Flash -->
-        <div th:replace="~{fragments/messages :: all}"></div>
-            <i class="fas fa-exclamation-circle me-2"></i>
-            <span th:text="${erreur}">Message d'erreur</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+            <!-- Messages Flash -->
+            <div th:replace="~{fragments/messages :: all}"></div>
 
-        <!-- En-tête avec informations principales -->
-        <div class="row mb-4">
-            <div class="col">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-auto">
-                                <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center avatar-lg">
-                                    <span th:text="${maitre.prenom?.substring(0,1)?.toUpperCase() + maitre.nom?.substring(0,1)?.toUpperCase()}">JD</span>
+            <!-- En-tête avec informations principales -->
+            <div class="row mb-4">
+                <div class="col">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center avatar-lg">
+                                        <span th:text="${maitre.prenom?.substring(0,1)?.toUpperCase() + maitre.nom?.substring(0,1)?.toUpperCase()}">JD</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <h1 class="mb-1" th:text="${maitre.prenom + ' ' + maitre.nom}">Jean Dupont</h1>
-                                <p class="text-muted mb-0" th:text="${maitre.poste ?: 'Poste non renseigné'}">Développeur Senior</p>
-                                <div class="mt-2">
-                                    <span class="badge bg-success">ID: <span th:text="${maitre.id}">1</span></span>
+                                <div class="col">
+                                    <h1 class="mb-1" th:text="${maitre.prenom + ' ' + maitre.nom}">Jean Dupont</h1>
+                                    <p class="text-muted mb-0" th:text="${maitre.poste ?: 'Poste non renseigné'}">Développeur Senior</p>
+                                    <div class="mt-2">
+                                        <span class="badge bg-success">ID: <span th:text="${maitre.id}">1</span></span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-auto">
-                                <div class="btn-group" role="group">
-                                    <a th:href="@{'/web/maitres/' + ${maitre.id} + '/modifier'}" 
-                                       class="btn btn-warning">
-                                        <i class="fas fa-edit me-1"></i>Modifier
-                                    </a>
-                                    <button type="button" 
-                                            class="btn btn-danger" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#modalSupprimer">
-                                        <i class="fas fa-trash me-1"></i>Supprimer
-                                    </button>
+                                <div class="col-auto">
+                                    <div class="btn-group" role="group">
+                                        <a th:href="@{'/web/maitres/' + ${maitre.id} + '/modifier'}" 
+                                           class="btn btn-warning">
+                                            <i class="fas fa-edit me-1"></i>Modifier
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-danger" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#modalSupprimer">
+                                            <i class="fas fa-trash me-1"></i>Supprimer
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <!-- Informations de contact -->
-            <div class="col-lg-6 mb-4">
-                <div class="card h-100 shadow">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">
-                            <i class="fas fa-address-card me-2"></i>Informations de Contact
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label text-muted">Email professionnel</label>
-                                <div th:if="${maitre.email != null and maitre.email != ''}">
-                                    <a th:href="'mailto:' + ${maitre.email}" 
-                                       th:text="${maitre.email}"
-                                       class="text-decoration-none fs-6">
-                                        jean.dupont@entreprise.com
-                                    </a>
+            <div class="row">
+                <!-- Informations de contact -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100 shadow">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-address-card me-2"></i>Informations de Contact
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label text-muted">Email professionnel</label>
+                                    <div th:if="${maitre.email != null and maitre.email != ''}">
+                                        <a th:href="'mailto:' + ${maitre.email}" 
+                                           th:text="${maitre.email}"
+                                           class="text-decoration-none fs-6">
+                                            jean.dupont@entreprise.com
+                                        </a>
+                                    </div>
+                                    <span th:if="${maitre.email == null or maitre.email == ''}" 
+                                          class="text-muted fst-italic">Non renseigné</span>
                                 </div>
-                                <span th:if="${maitre.email == null or maitre.email == ''}" 
-                                      class="text-muted fst-italic">Non renseigné</span>
+                                
+                                <div class="col-12">
+                                    <label class="form-label text-muted">Téléphone</label>
+                                    <div th:if="${maitre.telephone != null and maitre.telephone != ''}">
+                                        <a th:href="'tel:' + ${maitre.telephone}" 
+                                           th:text="${maitre.telephone}"
+                                           class="text-decoration-none fs-6">
+                                            01.23.45.67.89
+                                        </a>
+                                    </div>
+                                    <span th:if="${maitre.telephone == null or maitre.telephone == ''}" 
+                                          class="text-muted fst-italic">Non renseigné</span>
+                                </div>
                             </div>
-                            
-                            <div class="col-12">
-                                <label class="form-label text-muted">Téléphone</label>
-                                <div th:if="${maitre.telephone != null and maitre.telephone != ''}">
-                                    <a th:href="'tel:' + ${maitre.telephone}" 
-                                       th:text="${maitre.telephone}"
-                                       class="text-decoration-none fs-6">
-                                        01.23.45.67.89
-                                    </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations professionnelles -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100 shadow">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-briefcase me-2"></i>Informations Professionnelles
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label text-muted">Poste occupé</label>
+                                    <div th:if="${maitre.poste != null and maitre.poste != ''}">
+                                        <span class="badge bg-primary fs-6" th:text="${maitre.poste}">Développeur Senior</span>
+                                    </div>
+                                    <span th:if="${maitre.poste == null or maitre.poste == ''}" 
+                                          class="text-muted fst-italic">Non renseigné</span>
                                 </div>
-                                <span th:if="${maitre.telephone == null or maitre.telephone == ''}" 
-                                      class="text-muted fst-italic">Non renseigné</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Informations professionnelles -->
-            <div class="col-lg-6 mb-4">
-                <div class="card h-100 shadow">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">
-                            <i class="fas fa-briefcase me-2"></i>Informations Professionnelles
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label text-muted">Poste occupé</label>
-                                <div th:if="${maitre.poste != null and maitre.poste != ''}">
-                                    <span class="badge bg-primary fs-6" th:text="${maitre.poste}">Développeur Senior</span>
-                                </div>
-                                <span th:if="${maitre.poste == null or maitre.poste == ''}" 
-                                      class="text-muted fst-italic">Non renseigné</span>
-                            </div>
+            <!-- Remarques et observations -->
+            <div class="row" th:if="${maitre.remarques != null and maitre.remarques != ''}">
+                <div class="col-12 mb-4">
+                    <div class="card shadow">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-comment-alt me-2"></i>Remarques et Observations
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0 preserve-whitespace" th:text="${maitre.remarques}">
+                                Remarques détaillées sur le maître d'apprentissage...
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
-
-        <!-- Remarques et observations -->
-        <div class="row" th:if="${maitre.remarques != null and maitre.remarques != ''}">
-            <div class="col-12 mb-4">
-                <div class="card shadow">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">
-                            <i class="fas fa-comment-alt me-2"></i>Remarques et Observations
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-0 preserve-whitespace" th:text="${maitre.remarques}">
-                            Remarques détaillées sur le maître d'apprentissage...
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
     </div>
 
     <!-- Modal de confirmation de suppression -->
@@ -178,6 +175,7 @@
                     </button>
                     <form th:action="@{'/web/maitres/' + ${maitre.id} + '/supprimer'}" 
                           method="post" class="d-inline">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <button type="submit" class="btn btn-danger">
                             <i class="fas fa-trash me-1"></i>Supprimer
                         </button>

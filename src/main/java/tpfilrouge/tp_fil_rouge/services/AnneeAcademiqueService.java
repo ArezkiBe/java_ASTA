@@ -45,6 +45,27 @@ public class AnneeAcademiqueService {
     }
 
     public void deleteAnnee(Integer id) {
+        // Vérifier si l'année académique existe
+        if (!anneeAcademiqueRepository.existsById(id)) {
+            throw new RuntimeException("Année académique non trouvée avec l'ID : " + id);
+        }
+        
+        AnneeAcademique annee = anneeAcademiqueRepository.findById(id).get();
+        
+        // Empêcher la suppression de l'année courante
+        if (annee.getEstCourante()) {
+            throw new RuntimeException("Impossible de supprimer l'année académique courante : " + 
+                annee.getAnnee() + ". Veuillez d'abord définir une autre année comme courante.");
+        }
+        
+        // Vérifier s'il y a des apprentis associés (archivés ou non)
+        List<Apprenti> apprentisAssocies = apprentiRepository.findByAnneeAcademique(annee);
+        if (!apprentisAssocies.isEmpty()) {
+            throw new RuntimeException("Impossible de supprimer cette année académique : elle contient " + 
+                apprentisAssocies.size() + " apprenti(s) associé(s). " +
+                "Veuillez d'abord réassigner ou supprimer les apprentis.");
+        }
+        
         anneeAcademiqueRepository.deleteById(id);
     }
 
@@ -100,7 +121,8 @@ public class AnneeAcademiqueService {
         Optional<AnneeAcademique> anneeCouranteOpt = getAnneeCourante();
         
         // Cas spécial : Première année académique (aucune année courante définie)
-        if (anneeCouranteOpt.isEmpty()) {            AnneeAcademique premiere = creerNouvelleAnnee(nouvelleAnnee);
+        if (anneeCouranteOpt.isEmpty()) {
+            AnneeAcademique premiere = creerNouvelleAnnee(nouvelleAnnee);
             return definirAnneeCouranteInterne(premiere.getId());
         }
         
@@ -112,7 +134,7 @@ public class AnneeAcademiqueService {
                 " vers " + nouvelleAnnee + ". Seule l'année suivante immédiate est autorisée.");
         }
         
-        // 3. Créer la nouvelle année si elle n'existe pas
+        // 3. Créer la nouvelle année si elle n'existe pas et la définir comme courante
         AnneeAcademique prochaine;
         if (!existsByAnnee(nouvelleAnnee)) {
             prochaine = creerNouvelleAnnee(nouvelleAnnee);
@@ -121,19 +143,15 @@ public class AnneeAcademiqueService {
                 .orElseThrow(() -> new RuntimeException("Erreur lors de la récupération de l'année"));
         }
         
-        // 4. Promouvoir tous les apprentis actifs
-        promouvoirTousLesApprentis(prochaine);
+        // 4. AVANT de changer l'année courante, promouvoir les apprentis
+        promouvoirTousLesApprentis(prochaine, anneeCourante);
         
-        // 5. Définir cette année comme courante (utilise la méthode interne sécurisée)
-        return definirAnneeCouranteInterne(prochaine.getId());
+        // 5. PUIS définir cette année comme courante
+        AnneeAcademique nouvelleCourante = definirAnneeCouranteInterne(prochaine.getId());
+        
+        return nouvelleCourante;
     }
     
-    /**
-     * Valide qu'une transition d'année est autorisée (séquentielle uniquement)
-     * @param anneeActuelle L'année courante (ex: "2024-2025")  
-     * @param nouvelleAnnee L'année cible (ex: "2025-2026")
-     * @return true si la transition est valide
-     */
     private boolean estTransitionValide(String anneeActuelle, String nouvelleAnnee) {
         try {
             // Extraire les années de début des formats "YYYY-YYYY"
@@ -150,37 +168,26 @@ public class AnneeAcademiqueService {
     }
     
     /**
-     * Promeut automatiquement tous les apprentis:
-     * - L1 -> L2
-     * - L2 -> L3  
-     * - L3 -> Archivé
+     * Promeut automatiquement tous les apprentis selon les règles suivantes:
+     * - L1 → L2 (avec nouvelle année académique)
+     * - L2 → L3 (avec nouvelle année académique)  
+     * - L3 → Archivés (gardent leur année académique de diplomation)
+     * - Autres programmes → Changent seulement d'année académique (gardent leur programme)
+     * 
+     * Utilise des requêtes UPDATE directes pour éviter les conflits de transaction
      */
-    @Transactional
-    public void promouvoirTousLesApprentis(AnneeAcademique nouvelleAnnee) {
-        // Récupérer tous les apprentis non archivés
-        List<Apprenti> apprentisActifs = apprentiRepository.findByEstArchiveFalseOrderByNomAscPrenomAsc();
+    public void promouvoirTousLesApprentis(AnneeAcademique nouvelleAnnee, AnneeAcademique ancienneAnnee) {
+        // 1. Promouvoir L1 → L2 avec nouvelle année académique
+        apprentiRepository.updateL1ToL2(nouvelleAnnee.getId(), ancienneAnnee.getId());
         
-        for (Apprenti apprenti : apprentisActifs) {
-            switch (apprenti.getProgramme()) {
-                case "L1":
-                    apprenti.setProgramme("L2");
-                    apprenti.setAnneeAcademique(nouvelleAnnee);
-                    break;
-                case "L2":
-                    apprenti.setProgramme("L3");  
-                    apprenti.setAnneeAcademique(nouvelleAnnee);
-                    break;
-                case "L3":
-                    // Les L3 sont archivés (diplômés)
-                    apprenti.setEstArchive(true);
-                    // Ils gardent leur année académique de diplomation
-                    break;
-                default:
-                    // Programme inconnu, on le laisse tel quel mais on change l'année
-                    apprenti.setAnneeAcademique(nouvelleAnnee);
-            }
-            apprentiRepository.save(apprenti);
-        }
+        // 2. Promouvoir L2 → L3 avec nouvelle année académique  
+        apprentiRepository.updateL2ToL3(nouvelleAnnee.getId(), ancienneAnnee.getId());
+        
+        // 3. Archiver L3 (ils gardent leur année académique de diplomation)
+        apprentiRepository.archiveL3(ancienneAnnee.getId());
+        
+        // 4. Mettre à jour l'année académique pour les autres programmes (Master, Doctorat, etc.)
+        apprentiRepository.updateAutresProgrammesVersNouvelleAnnee(nouvelleAnnee.getId(), ancienneAnnee.getId());
     }
 }
 

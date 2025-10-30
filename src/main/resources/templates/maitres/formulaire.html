@@ -209,8 +209,23 @@
         // Fonction de réinitialisation du formulaire
         function resetForm() {
             if (confirm('Êtes-vous sûr de vouloir réinitialiser le formulaire ?')) {
-                document.querySelector('form').reset();
-                document.querySelector('form').classList.remove('was-validated');
+                // Réinitialiser tous les champs manuellement
+                document.getElementById('nom').value = '';
+                document.getElementById('prenom').value = '';
+                document.getElementById('poste').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('telephone').value = '';
+                document.getElementById('remarques').value = '';
+                
+                // Supprimer les classes de validation
+                const form = document.querySelector('form');
+                form.classList.remove('was-validated');
+                
+                // Supprimer les classes d'erreur sur tous les champs
+                const fields = form.querySelectorAll('.form-control');
+                fields.forEach(field => {
+                    field.classList.remove('is-invalid', 'is-valid');
+                });
             }
         }
 

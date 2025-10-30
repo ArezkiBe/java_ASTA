@@ -51,6 +51,11 @@ public class VisiteService {
     }
 
     public void deleteVisite(Integer id) {
+        // Vérifier si la visite existe
+        if (!visiteRepository.existsById(id)) {
+            throw new RuntimeException("Visite non trouvée avec l'ID : " + id);
+        }
+        
         visiteRepository.deleteById(id);
     }
 }

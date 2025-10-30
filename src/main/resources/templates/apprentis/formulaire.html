@@ -17,16 +17,10 @@
     <div th:replace="~{fragments/header :: navbar('apprentis')}"></div>
 
     <div class="container-fluid">
+        <div class="content-wrapper">
+        
         <!-- Messages flash -->
         <div th:replace="~{fragments/messages :: all}"></div>
-        
-        <div class="content-wrapper">
-
-        <div th:if="${erreur}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            <span th:text="${erreur}">Message d'erreur</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
 
         <!-- Breadcrumb -->
         <div th:replace="~{fragments/breadcrumb :: apprentis(${modeModification and apprenti != null and apprenti.nomComplet != null ? ('Modifier ' + apprenti.nomComplet) : 'Ajouter un apprenti'})}"></div>
@@ -72,6 +66,9 @@
                       th:action="${modeModification and apprenti != null and apprenti.id != null ? '/web/apprentis/' + apprenti.id + '/modifier' : '/web/apprentis/ajouter'}" 
                       method="post">
                     
+                    <!-- Champ caché pour l'ID en mode modification -->
+                    <input th:if="${modeModification}" type="hidden" th:field="*{id}" />
+                    
                     <!-- Informations personnelles -->
                     <div class="card shadow-sm mb-4">
                         <div class="card-header bg-primary text-white">
@@ -94,7 +91,8 @@
                                                th:classappend="${#fields.hasErrors('nom')} ? 'is-invalid' : ''">
                                         <label for="nom">Nom de famille *</label>
                                         <div th:if="${#fields.hasErrors('nom')}" class="invalid-feedback">
-                                            <span th:errors="*{nom}">Erreur nom</span>
+                                            <i class="fas fa-times-circle text-danger me-1"></i>
+                                            <span th:text="${#fields.errors('nom')[0]}">Erreur nom</span>
                                         </div>
                                     </div>
                                 </div>
@@ -112,7 +110,8 @@
                                                th:classappend="${#fields.hasErrors('prenom')} ? 'is-invalid' : ''">
                                         <label for="prenom">Prénom *</label>
                                         <div th:if="${#fields.hasErrors('prenom')}" class="invalid-feedback">
-                                            <span th:errors="*{prenom}">Erreur prénom</span>
+                                            <i class="fas fa-times-circle text-danger me-1"></i>
+                                            <span th:text="${#fields.errors('prenom')[0]}">Erreur prénom</span>
                                         </div>
                                     </div>
                                 </div>
@@ -130,7 +129,8 @@
                                                th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''">
                                         <label for="email">Adresse email *</label>
                                         <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback">
-                                            <span th:errors="*{email}">Erreur email</span>
+                                            <i class="fas fa-times-circle text-danger me-1"></i>
+                                            <span th:text="${#fields.errors('email')[0]}">Erreur email</span>
                                         </div>
                                     </div>
                                 </div>
@@ -143,8 +143,13 @@
                                                class="form-control" 
                                                id="telephone" 
                                                placeholder="06 12 34 56 78"
-                                               maxlength="15">
+                                               maxlength="15"
+                                               th:classappend="${#fields.hasErrors('telephone')} ? 'is-invalid' : ''">
                                         <label for="telephone">Téléphone (optionnel)</label>
+                                        <div th:if="${#fields.hasErrors('telephone')}" class="invalid-feedback">
+                                            <i class="fas fa-times-circle text-danger me-1"></i>
+                                            <span th:text="${#fields.errors('telephone')[0]}">Erreur téléphone</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -321,22 +326,20 @@
                     </div>
 
                     <!-- Boutons d'action -->
-                    <div class="card shadow-sm">
-                        <div class="card-body bg-light text-end">
-                            <div class="btn-group" role="group">
-                                <a th:href="${modeModification and apprenti != null and apprenti.id != null ? '/web/apprentis/' + apprenti.id : '/web/apprentis'}" 
-                                   class="btn btn-secondary">
-                                    <i class="fas fa-times me-1"></i>Annuler
-                                </a>
-                                <button type="submit" class="btn btn-success btn-lg">
-                                    <span th:if="${modeModification}">
-                                        <i class="fas fa-save me-2"></i>Enregistrer
-                                    </span>
-                                    <span th:unless="${modeModification}">
-                                        <i class="fas fa-plus me-2"></i>Ajouter
-                                    </span>
-                                </button>
-                            </div>
+                    <div class="text-end mt-4 mb-4">
+                        <div class="btn-group" role="group">
+                            <a th:href="${modeModification and apprenti != null and apprenti.id != null ? '/web/apprentis/' + apprenti.id : '/web/apprentis'}" 
+                               class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Annuler
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <span th:if="${modeModification}">
+                                    <i class="fas fa-save me-2"></i>Enregistrer
+                                </span>
+                                <span th:unless="${modeModification}">
+                                    <i class="fas fa-plus me-2"></i>Ajouter
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </form>

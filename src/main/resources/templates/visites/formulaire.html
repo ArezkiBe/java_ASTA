@@ -149,11 +149,6 @@
                                 </a>
                                 
                                 <div>
-                                    <button type="button" 
-                                            class="btn btn-outline-secondary me-2" 
-                                            onclick="resetForm()">
-                                        <i class="fas fa-undo me-2"></i>Réinitialiser
-                                    </button>
                                     <button type="submit" 
                                             class="btn btn-primary">
                                         <i th:class="${modeCreation ? 'fas fa-calendar-plus' : 'fas fa-check'} + ' me-2'"></i>
@@ -162,37 +157,6 @@
                                 </div>
                             </div>
                         </form>
-                    </div>
-                </div>
-
-                <!-- Aide contextuelle -->
-                <div class="card mt-3" th:if="${modeCreation}">
-                    <div class="card-header bg-info text-white">
-                        <h6 class="mb-0">
-                            <i class="fas fa-info-circle me-2"></i>Guide de Planification
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6>Types de visite :</h6>
-                                <ul class="small">
-                                    <li><strong>Présentiel :</strong> Visite sur le lieu de travail</li>
-                                    <li><strong>Visioconférence :</strong> Entretien à distance</li>
-                                    <li><strong>Téléphonique :</strong> Suivi par téléphone</li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <h6>Points à aborder :</h6>
-                                <ul class="small">
-                                    <li>Intégration et adaptation</li>
-                                    <li>Missions et responsabilités</li>
-                                    <li>Compétences développées</li>
-                                    <li>Difficultés rencontrées</li>
-                                    <li>Évolution du projet</li>
-                                </ul>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -220,14 +184,6 @@
                 });
             }, false);
         })();
-
-        // Fonction pour réinitialiser le formulaire
-        function resetForm() {
-            if (confirm('Êtes-vous sûr de vouloir réinitialiser le formulaire ?')) {
-                document.querySelector('form').reset();
-                document.querySelector('form').classList.remove('was-validated');
-            }
-        }
 
         // Validation de la date (ne peut pas être dans le passé pour une nouvelle visite)
         document.getElementById('date').addEventListener('change', function() {

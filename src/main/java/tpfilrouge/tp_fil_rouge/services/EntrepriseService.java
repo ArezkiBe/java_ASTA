@@ -42,6 +42,13 @@ public class EntrepriseService {
     }
 
     public void deleteEntreprise(Integer id) {
+        // Vérifier si l'entreprise existe
+        if (!entrepriseRepository.existsById(id)) {
+            throw new RuntimeException("Entreprise non trouvée avec l'ID : " + id);
+        }
+        
+        // Cette méthode nécessiterait l'ajout d'une vérification pour les apprentis et maîtres associés
+        // Pour l'instant, on maintient la suppression simple mais avec vérification d'existence
         entrepriseRepository.deleteById(id);
     }
 }

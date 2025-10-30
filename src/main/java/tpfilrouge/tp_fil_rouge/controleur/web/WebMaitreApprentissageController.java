@@ -255,7 +255,7 @@ public class WebMaitreApprentissageController {
             
         } catch (Exception e) {
             logger.error("Erreur lors de la suppression du maître ID: {}", id, e);
-            redirectAttributes.addFlashAttribute(ATTR_ERREUR, "Erreur lors de la suppression");
+            redirectAttributes.addFlashAttribute(ATTR_ERREUR, e.getMessage());
         }
         
         return REDIRECT_LISTE;

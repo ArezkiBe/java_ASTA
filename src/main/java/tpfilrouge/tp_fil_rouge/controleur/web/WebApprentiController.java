@@ -22,24 +22,6 @@ import tpfilrouge.tp_fil_rouge.services.TuteurEnseignantService;
 
 import java.util.List;
 
-/**
- * Contrôleur web pour la gestion des apprentis via interface Thymeleaf
- * 
- * Conforme aux exigences fonctionnelles :
- * - Exigence #2 : Tableau de bord avec liste des apprentis
- * - Exigence #3 : Affichage des détails d'un apprenti
- * - Exigence #4 : Modification des apprentis avec validation
- * - Exigence #5 : Ajout d'apprentis
- * 
- * Respect des bonnes pratiques Clean Code :
- * - Séparation des responsabilités (web vs API REST)
- * - Gestion d'erreurs avec messages utilisateur
- * - Validation côté serveur
- * - Logging approprié
- * 
- * @author Votre nom
- * @version 1.0
- */
 @Controller
 @RequestMapping("/web/apprentis")
 public class WebApprentiController {
@@ -93,20 +75,52 @@ public class WebApprentiController {
      */
     @GetMapping
     public String afficherListeApprentis(Model model) {
-        logger.info("Affichage de la liste des apprentis non archivés");
+        logger.info("Affichage de la liste des apprentis actifs (non archivés)");
         
         try {
+            // Afficher tous les apprentis actifs, pas seulement ceux de l'année courante
             List<Apprenti> apprentis = apprentiService.getApprentisCourants();
             model.addAttribute(ATTR_APPRENTIS, apprentis);
             
             // Statistiques pour l'affichage
             model.addAttribute("nombreApprentis", apprentis.size());
             
-            logger.info("Liste des apprentis chargée avec succès : {} apprentis trouvés", apprentis.size());
+            // Ajouter l'année courante pour info
+            model.addAttribute("anneeCourante", anneeAcademiqueService.getAnneeCourante().orElse(null));
+            
+            logger.info("Liste des apprentis chargée avec succès : {} apprentis actifs trouvés", apprentis.size());
             
         } catch (Exception e) {
             logger.error("Erreur lors du chargement de la liste des apprentis", e);
             model.addAttribute(ATTR_ERREUR, "Erreur lors du chargement de la liste des apprentis");
+        }
+        
+        return VUE_LISTE;
+    }
+    
+    /**
+     * Affichage des apprentis avec filtrage par année académique (optionnel)
+     */
+    @GetMapping("/annee/{anneeId}")
+    public String afficherApprentisParAnnee(@PathVariable Integer anneeId, Model model, RedirectAttributes redirectAttributes) {
+        logger.info("Affichage des apprentis de l'année académique ID: {}", anneeId);
+        
+        try {
+            List<Apprenti> apprentis = apprentiService.getApprentisParAnnee(anneeId);
+            model.addAttribute(ATTR_APPRENTIS, apprentis);
+            model.addAttribute("nombreApprentis", apprentis.size());
+            
+            // Récupérer l'année pour affichage
+            anneeAcademiqueService.getAnneeById(anneeId).ifPresent(annee -> 
+                model.addAttribute("anneeFiltre", annee)
+            );
+            
+            logger.info("Liste filtrée chargée : {} apprentis pour l'année ID: {}", apprentis.size(), anneeId);
+            
+        } catch (Exception e) {
+            logger.error("Erreur lors du chargement des apprentis par année", e);
+            redirectAttributes.addFlashAttribute(ATTR_ERREUR, "Erreur lors du filtrage par année");
+            return REDIRECT_LISTE;
         }
         
         return VUE_LISTE;
@@ -188,6 +202,23 @@ public class WebApprentiController {
         }
         
         try {
+            // Récupérer l'apprenti existant pour conserver le tuteur enseignant
+            Apprenti apprentiExistant = apprentiService.getApprentiById(id);
+            
+            // Reconstituer les entités à partir des IDs du formulaire
+            if (apprenti.getAnneeAcademique() != null && apprenti.getAnneeAcademique().getId() != null) {
+                apprenti.setAnneeAcademique(anneeAcademiqueService.getAnneeById(apprenti.getAnneeAcademique().getId()).orElse(null));
+            }
+            if (apprenti.getEntreprise() != null && apprenti.getEntreprise().getId() != null) {
+                apprenti.setEntreprise(entrepriseService.getEntrepriseById(apprenti.getEntreprise().getId()).orElse(null));
+            }
+            if (apprenti.getMaitreApprentissage() != null && apprenti.getMaitreApprentissage().getId() != null) {
+                apprenti.setMaitreApprentissage(maitreApprentissageService.getMaitreById(apprenti.getMaitreApprentissage().getId()).orElse(null));
+            }
+            
+            // Conserver le tuteur enseignant existant
+            apprenti.setTuteurEnseignant(apprentiExistant.getTuteurEnseignant());
+            
             // Appliquer la modification
             Apprenti apprentiModifie = apprentiService.updateApprenti(id, apprenti);
             
@@ -318,7 +349,43 @@ public class WebApprentiController {
             
         } catch (Exception e) {
             logger.error("Erreur lors de la suppression de l'apprenti ID: {}", id, e);
-            redirectAttributes.addFlashAttribute(ATTR_ERREUR, "Erreur lors de la suppression");
+            redirectAttributes.addFlashAttribute(ATTR_ERREUR, e.getMessage());
+        }
+        
+        return REDIRECT_LISTE;
+    }
+    
+    @GetMapping("/importer")
+    public String afficherImportCsv(Model model) {
+        logger.info("Affichage de la page d'import CSV");
+        return "apprentis/import-csv";
+    }
+    @PostMapping("/importer")
+    public String traiterImportCsv(@RequestParam("fichierCsv") org.springframework.web.multipart.MultipartFile fichier,
+                                  RedirectAttributes redirectAttributes) {
+        logger.info("Traitement d'un import CSV d'apprentis");
+        
+        try {
+            if (fichier.isEmpty()) {
+                redirectAttributes.addFlashAttribute(ATTR_ERREUR, "Veuillez sélectionner un fichier CSV");
+                return "redirect:/web/apprentis/importer";
+            }
+            
+            if (!fichier.getOriginalFilename().toLowerCase().endsWith(".csv")) {
+                redirectAttributes.addFlashAttribute(ATTR_ERREUR, "Le fichier doit être au format CSV");
+                return "redirect:/web/apprentis/importer";
+            }
+            
+            String contenuCsv = new String(fichier.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            String resultat = apprentiService.importerApprentisCsv(contenuCsv);
+            
+            logger.info("Import CSV terminé : {}", resultat);
+            redirectAttributes.addFlashAttribute(ATTR_MESSAGE, resultat);
+            
+        } catch (Exception e) {
+            logger.error("Erreur lors de l'import CSV", e);
+            redirectAttributes.addFlashAttribute(ATTR_ERREUR, "Erreur lors de l'import : " + e.getMessage());
+            return "redirect:/web/apprentis/importer";
         }
         
         return REDIRECT_LISTE;

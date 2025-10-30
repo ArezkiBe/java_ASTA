@@ -1,7 +1,9 @@
 package tpfilrouge.tp_fil_rouge.modele.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tpfilrouge.tp_fil_rouge.modele.entite.Apprenti;
 
@@ -17,6 +19,8 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
     List<Apprenti> findByAnneeAcademiqueIdAndEstArchiveFalse(Integer anneeId);
     
     boolean existsByEmail(String email);
+    
+    java.util.Optional<Apprenti> findByEmail(String email);
     
     // Convertie en JPQL pour respecter la règle "une seule requête SQL native"
     @Query("SELECT COUNT(a) FROM Apprenti a WHERE a.estArchive = false")
@@ -48,6 +52,24 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
 
     // Recherche par entreprise (Exigence 7.1.2)
     List<Apprenti> findByEntrepriseIdAndEstArchiveFalse(Integer entrepriseId);
+    
+    // Méthodes pour la promotion automatique des apprentis
+    // CORRECTION: Utiliser l'année académique actuelle pour éviter les doublons de promotion
+    @Modifying
+    @Query("UPDATE Apprenti a SET a.programme = 'L2', a.anneeAcademique.id = :nouvelleAnneeId WHERE a.programme = 'L1' AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
+    void updateL1ToL2(@Param("nouvelleAnneeId") Integer nouvelleAnneeId, @Param("ancienneAnneeId") Integer ancienneAnneeId);
+    
+    @Modifying
+    @Query("UPDATE Apprenti a SET a.programme = 'L3', a.anneeAcademique.id = :nouvelleAnneeId WHERE a.programme = 'L2' AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
+    void updateL2ToL3(@Param("nouvelleAnneeId") Integer nouvelleAnneeId, @Param("ancienneAnneeId") Integer ancienneAnneeId);
+    
+    @Modifying
+    @Query("UPDATE Apprenti a SET a.estArchive = true WHERE a.programme = 'L3' AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
+    void archiveL3(@Param("ancienneAnneeId") Integer ancienneAnneeId);
+    
+    @Modifying
+    @Query("UPDATE Apprenti a SET a.anneeAcademique.id = :nouvelleAnneeId WHERE a.programme NOT IN ('L1', 'L2', 'L3') AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
+    void updateAutresProgrammesVersNouvelleAnnee(@Param("nouvelleAnneeId") Integer nouvelleAnneeId, @Param("ancienneAnneeId") Integer ancienneAnneeId);
 
     // Recherche par année académique (Exigence 7.1.4)
     List<Apprenti> findByAnneeAcademiqueAnneeAndEstArchiveFalse(String annee);

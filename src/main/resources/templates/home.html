@@ -31,15 +31,15 @@
                 </div>
             </div>
 
-            <!-- Navigation Cards -->
-            <div class="row dashboard-grid justify-content-center">
+            <!-- Navigation Cards - 7 boutons uniformes -->
+            <div class="row g-4">
                 <!-- Apprentis -->
-                <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="col-lg-4 col-md-6">
                     <a href="/web/apprentis" class="text-decoration-none">
                         <div class="card dashboard-card h-100 border-0 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="dashboard-icon mx-auto">
-                                    <i class="fas fa-users"></i>
+                            <div class="card-body text-center p-4">
+                                <div class="dashboard-icon mx-auto mb-3">
+                                    <i class="fas fa-users text-primary"></i>
                                 </div>
                                 <h5 class="card-title fw-semibold mb-2">Apprentis</h5>
                                 <p class="card-text text-muted small mb-0">Gestion des étudiants</p>
@@ -47,13 +47,14 @@
                         </div>
                     </a>
                 </div>
-                <!-- Maîtres -->
-                <div class="col-lg-3 col-md-6 col-sm-6">
+
+                <!-- Maîtres d'apprentissage -->
+                <div class="col-lg-4 col-md-6">
                     <a href="/web/maitres" class="text-decoration-none">
                         <div class="card dashboard-card h-100 border-0 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="dashboard-icon mx-auto">
-                                    <i class="fas fa-chalkboard-teacher"></i>
+                            <div class="card-body text-center p-4">
+                                <div class="dashboard-icon mx-auto mb-3">
+                                    <i class="fas fa-chalkboard-teacher text-success"></i>
                                 </div>
                                 <h5 class="card-title fw-semibold mb-2">Maîtres</h5>
                                 <p class="card-text text-muted small mb-0">Encadrants entreprise</p>
@@ -63,27 +64,27 @@
                 </div>
                 
                 <!-- Évaluations -->
-                <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="col-lg-4 col-md-6">
                     <a href="/web/evaluations" class="text-decoration-none">
                         <div class="card dashboard-card h-100 border-0 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="dashboard-icon mx-auto">
-                                    <i class="fas fa-clipboard-check"></i>
+                            <div class="card-body text-center p-4">
+                                <div class="dashboard-icon mx-auto mb-3">
+                                    <i class="fas fa-clipboard-check text-info"></i>
                                 </div>
                                 <h5 class="card-title fw-semibold mb-2">Évaluations</h5>
-                                <p class="card-text text-muted small mb-0">Suivi des notes</p>
+                                <p class="card-text text-muted small mb-0">Suivi des compétences</p>
                             </div>
                         </div>
                     </a>
                 </div>
                 
                 <!-- Visites -->
-                <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="col-lg-4 col-md-6">
                     <a href="/web/visites" class="text-decoration-none">
                         <div class="card dashboard-card h-100 border-0 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="dashboard-icon mx-auto">
-                                    <i class="fas fa-map-marker-alt"></i>
+                            <div class="card-body text-center p-4">
+                                <div class="dashboard-icon mx-auto mb-3">
+                                    <i class="fas fa-map-marker-alt text-warning"></i>
                                 </div>
                                 <h5 class="card-title fw-semibold mb-2">Visites</h5>
                                 <p class="card-text text-muted small mb-0">Visites entreprise</p>
@@ -91,62 +92,52 @@
                         </div>
                     </a>
                 </div>
-            </div>
-            
-            <!-- Section Années académiques -->
-            <div class="row mt-5">
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-4">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <h5 class="card-title fw-semibold mb-2">
-                                        <i class="fas fa-calendar-alt text-secondary me-2"></i>
-                                        Années Académiques
-                                    </h5>
-                                    <p class="card-text text-muted mb-0">Gestion des périodes académiques et progression des apprentis</p>
+
+                <!-- Années Académiques -->
+                <div class="col-lg-4 col-md-6">
+                    <a href="/web/annees" class="text-decoration-none">
+                        <div class="card dashboard-card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="dashboard-icon mx-auto mb-3">
+                                    <i class="fas fa-calendar-alt text-secondary"></i>
                                 </div>
-                                <div class="col-md-4 text-end">
-                                    <a href="/web/annees" class="btn btn-outline-secondary">
-                                        <i class="fas fa-cog me-1"></i>Gérer
-                                    </a>
-                                </div>
+                                <h5 class="card-title fw-semibold mb-2">Années Académiques</h5>
+                                <p class="card-text text-muted small mb-0">Gestion des périodes</p>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
-            
-            <!-- Recherche -->
-            <div class="col-lg-4 col-md-6">
-                <a href="/web/recherche" class="text-decoration-none">
-                    <div class="card h-100 fade-in" style="animation-delay: 0.3s">
-                        <div class="card-body p-4 text-center">
-                            <div class="icon-badge mx-auto mb-3">
-                                <i class="fas fa-search"></i>
+                
+                <!-- Recherche -->
+                <div class="col-lg-4 col-md-6">
+                    <a href="/web/recherche" class="text-decoration-none">
+                        <div class="card dashboard-card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="dashboard-icon mx-auto mb-3">
+                                    <i class="fas fa-search text-primary"></i>
+                                </div>
+                                <h5 class="card-title fw-semibold mb-2">Recherche</h5>
+                                <p class="card-text text-muted small mb-0">Trouver un apprenti</p>
                             </div>
-                            <h5 class="card-title">Recherche</h5>
-                            <p class="text-muted">Trouver un apprenti</p>
                         </div>
-                    </div>
-                </a>
-            </div>
-            
-            <!-- Évaluations -->
-            <div class="col-lg-4 col-md-6">
-                <a href="/web/evaluations" class="text-decoration-none">
-                    <div class="card h-100 fade-in" style="animation-delay: 0.4s">
-                        <div class="card-body p-4 text-center">
-                            <div class="icon-badge mx-auto mb-3">
-                                <i class="fas fa-clipboard-check"></i>
+                    </a>
+                </div>
+
+                <!-- Entreprises -->
+                <div class="col-lg-4 col-md-6">
+                    <a href="/web/entreprises" class="text-decoration-none">
+                        <div class="card dashboard-card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="dashboard-icon mx-auto mb-3">
+                                    <i class="fas fa-building text-danger"></i>
+                                </div>
+                                <h5 class="card-title fw-semibold mb-2">Entreprises</h5>
+                                <p class="card-text text-muted small mb-0">Gestion des partenaires</p>
                             </div>
-                            <h5 class="card-title">Évaluations</h5>
-                            <p class="text-muted">Suivi des compétences</p>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
-            
-            <!-- Visites -->
         </div>
     </main>
     

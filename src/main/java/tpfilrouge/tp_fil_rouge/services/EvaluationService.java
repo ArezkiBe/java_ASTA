@@ -44,6 +44,11 @@ public class EvaluationService {
     }
 
     public void deleteEvaluation(Integer id) {
+        // Vérifier si l'évaluation existe
+        if (!evaluationRepository.existsById(id)) {
+            throw new RuntimeException("Évaluation non trouvée avec l'ID : " + id);
+        }
+        
         evaluationRepository.deleteById(id);
     }
 }

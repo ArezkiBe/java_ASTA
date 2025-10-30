@@ -36,6 +36,44 @@
             </div>
         </div>
 
+        <!-- Statistiques des évaluations -->
+        <div class="card mb-4 shadow-sm" th:if="${evaluations != null and not evaluations.empty}">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Statistiques des Évaluations
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="text-center p-3 border rounded bg-light">
+                            <h2 class="text-primary mb-1" th:text="${evaluations.size()}">0</h2>
+                            <h6 class="text-muted mb-0">Total Évaluations</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 border rounded bg-light">
+                            <h2 class="text-warning mb-1" th:text="${#lists.size(evaluations.?[type == 'Soutenance'])}">0</h2>
+                            <h6 class="text-muted mb-0">Soutenances</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 border rounded bg-light">
+                            <h2 class="text-info mb-1" th:text="${#lists.size(evaluations.?[type == 'Memoire/Rapport'])}">0</h2>
+                            <h6 class="text-muted mb-0">Mémoires/Rapports</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 border rounded bg-light">
+                            <h2 class="text-success mb-1" th:text="${#lists.size(evaluations.?[noteFinale != null and noteFinale >= 12])}">0</h2>
+                            <h6 class="text-muted mb-0">Validées (≥12)</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Liste des évaluations -->
         <div class="card shadow-sm">
             <div class="card-header bg-white">
@@ -108,6 +146,7 @@
                                         </a>
                                         <form th:action="@{/web/evaluations/{id}/supprimer(id=${evaluation.id})}" 
                                               method="post" class="d-inline">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                             <button type="submit" 
                                                     class="btn btn-outline-danger" 
                                                     onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette évaluation ?')"
@@ -124,41 +163,7 @@
             </div>
         </div>
 
-        <!-- Statistiques rapides -->
-        <div class="row mt-4" th:if="${evaluations != null and not evaluations.empty}">
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="text-primary" th:text="${evaluations.size()}">0</h3>
-                        <p class="card-text text-muted">Total Évaluations</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="text-warning" th:text="${#lists.size(evaluations.?[type == 'Soutenance'])}">0</h3>
-                        <p class="card-text text-muted">Soutenances</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="text-info" th:text="${#lists.size(evaluations.?[type == 'Memoire/Rapport'])}">0</h3>
-                        <p class="card-text text-muted">Mémoires/Rapports</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="text-success" th:text="${#lists.size(evaluations.?[noteFinale != null and noteFinale >= 12])}">0</h3>
-                        <p class="card-text text-muted">Validées (≥12)</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
     </div>
 

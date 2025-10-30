@@ -26,7 +26,7 @@
     </div>
     
     <!-- Fragment combiné pour tous les messages -->
-    <div th:fragment="all">
+    <div th:fragment="all" class="mb-4">
         <div th:replace="~{fragments/messages :: success}"></div>
         <div th:replace="~{fragments/messages :: error}"></div>
         <div th:replace="~{fragments/messages :: info}"></div>

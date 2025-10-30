@@ -194,7 +194,7 @@ public class WebVisiteController {
             
         } catch (Exception e) {
             logger.error("Erreur lors de la suppression de la visite {}", id, e);
-            redirectAttributes.addFlashAttribute("erreur", "Erreur lors de la suppression de la visite");
+            redirectAttributes.addFlashAttribute("erreur", e.getMessage());
         }
         
         return "redirect:/web/visites";
