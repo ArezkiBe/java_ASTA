@@ -156,10 +156,10 @@
                                     <!-- Formation -->
                                     <td>
                                         <span th:text="${apprenti.programme}" 
-                                              th:class="'badge ' + (${apprenti.programme == 'L1'} ? 'bg-success' : 
-                                                                   (${apprenti.programme == 'L2'} ? 'bg-warning text-dark' : 
-                                                                   (${apprenti.programme == 'L3'} ? 'bg-danger' : 'bg-info')))">
-                                            L2
+                                              th:class="'badge ' + (${apprenti.programme == 'I1'} ? 'bg-success' : 
+                                                                   (${apprenti.programme == 'I2'} ? 'bg-warning text-dark' : 
+                                                                   (${apprenti.programme == 'I3'} ? 'bg-danger' : 'bg-info')))">
+                                            I2
                                         </span>
                                         <div th:if="${apprenti.majeure}" class="text-muted small mt-1" th:text="${apprenti.majeure}">Informatique</div>
                                     </td>

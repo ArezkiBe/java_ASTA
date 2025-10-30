@@ -40,7 +40,7 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
         FROM apprenti a
         INNER JOIN annee_academique aa ON a.annee_academique_id = aa.id
         LEFT JOIN entreprise e ON a.entreprise_id = e.id
-        WHERE a.programme IN ('L1', 'L2', 'L3')
+        WHERE a.programme IN ('I1', 'I2', 'I3')
         GROUP BY a.programme, aa.annee, e.raison_sociale
         HAVING COUNT(*) >= 1
         ORDER BY aa.annee DESC, a.programme ASC, nombre_apprentis DESC
@@ -56,19 +56,19 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
     // Méthodes pour la promotion automatique des apprentis
     // CORRECTION: Utiliser l'année académique actuelle pour éviter les doublons de promotion
     @Modifying
-    @Query("UPDATE Apprenti a SET a.programme = 'L2', a.anneeAcademique.id = :nouvelleAnneeId WHERE a.programme = 'L1' AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
-    void updateL1ToL2(@Param("nouvelleAnneeId") Integer nouvelleAnneeId, @Param("ancienneAnneeId") Integer ancienneAnneeId);
+    @Query("UPDATE Apprenti a SET a.programme = 'I2', a.anneeAcademique.id = :nouvelleAnneeId WHERE a.programme = 'I1' AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
+    void updateI1ToI2(@Param("nouvelleAnneeId") Integer nouvelleAnneeId, @Param("ancienneAnneeId") Integer ancienneAnneeId);
     
     @Modifying
-    @Query("UPDATE Apprenti a SET a.programme = 'L3', a.anneeAcademique.id = :nouvelleAnneeId WHERE a.programme = 'L2' AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
-    void updateL2ToL3(@Param("nouvelleAnneeId") Integer nouvelleAnneeId, @Param("ancienneAnneeId") Integer ancienneAnneeId);
+    @Query("UPDATE Apprenti a SET a.programme = 'I3', a.anneeAcademique.id = :nouvelleAnneeId WHERE a.programme = 'I2' AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
+    void updateI2ToI3(@Param("nouvelleAnneeId") Integer nouvelleAnneeId, @Param("ancienneAnneeId") Integer ancienneAnneeId);
     
     @Modifying
-    @Query("UPDATE Apprenti a SET a.estArchive = true WHERE a.programme = 'L3' AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
-    void archiveL3(@Param("ancienneAnneeId") Integer ancienneAnneeId);
+    @Query("UPDATE Apprenti a SET a.estArchive = true WHERE a.programme = 'I3' AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
+    void archiveI3(@Param("ancienneAnneeId") Integer ancienneAnneeId);
     
     @Modifying
-    @Query("UPDATE Apprenti a SET a.anneeAcademique.id = :nouvelleAnneeId WHERE a.programme NOT IN ('L1', 'L2', 'L3') AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
+    @Query("UPDATE Apprenti a SET a.anneeAcademique.id = :nouvelleAnneeId WHERE a.programme NOT IN ('I1', 'I2', 'I3') AND a.estArchive = false AND a.anneeAcademique.id = :ancienneAnneeId")
     void updateAutresProgrammesVersNouvelleAnnee(@Param("nouvelleAnneeId") Integer nouvelleAnneeId, @Param("ancienneAnneeId") Integer ancienneAnneeId);
 
     // Recherche par année académique (Exigence 7.1.4)

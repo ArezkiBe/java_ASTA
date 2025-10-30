@@ -169,22 +169,22 @@ public class AnneeAcademiqueService {
     
     /**
      * Promeut automatiquement tous les apprentis selon les règles suivantes:
-     * - L1 → L2 (avec nouvelle année académique)
-     * - L2 → L3 (avec nouvelle année académique)  
-     * - L3 → Archivés (gardent leur année académique de diplomation)
+     * - I1 → I2 (avec nouvelle année académique)
+     * - I2 → I3 (avec nouvelle année académique)  
+     * - I3 → Archivés (gardent leur année académique de diplomation)
      * - Autres programmes → Changent seulement d'année académique (gardent leur programme)
      * 
      * Utilise des requêtes UPDATE directes pour éviter les conflits de transaction
      */
     public void promouvoirTousLesApprentis(AnneeAcademique nouvelleAnnee, AnneeAcademique ancienneAnnee) {
-        // 1. Promouvoir L1 → L2 avec nouvelle année académique
-        apprentiRepository.updateL1ToL2(nouvelleAnnee.getId(), ancienneAnnee.getId());
+        // 1. Promouvoir I1 → I2 avec nouvelle année académique
+        apprentiRepository.updateI1ToI2(nouvelleAnnee.getId(), ancienneAnnee.getId());
         
-        // 2. Promouvoir L2 → L3 avec nouvelle année académique  
-        apprentiRepository.updateL2ToL3(nouvelleAnnee.getId(), ancienneAnnee.getId());
+        // 2. Promouvoir I2 → I3 avec nouvelle année académique  
+        apprentiRepository.updateI2ToI3(nouvelleAnnee.getId(), ancienneAnnee.getId());
         
-        // 3. Archiver L3 (ils gardent leur année académique de diplomation)
-        apprentiRepository.archiveL3(ancienneAnnee.getId());
+        // 3. Archiver I3 (ils gardent leur année académique de diplomation)
+        apprentiRepository.archiveI3(ancienneAnnee.getId());
         
         // 4. Mettre à jour l'année académique pour les autres programmes (Master, Doctorat, etc.)
         apprentiRepository.updateAutresProgrammesVersNouvelleAnnee(nouvelleAnnee.getId(), ancienneAnnee.getId());

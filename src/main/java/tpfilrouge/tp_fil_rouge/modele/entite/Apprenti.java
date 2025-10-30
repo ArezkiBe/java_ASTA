@@ -37,7 +37,7 @@ public class Apprenti {
     private String telephone;
 
     @Column(name = "programme", length = 50)
-    private String programme = "L1";
+    private String programme = "I1";
 
     @Column(name = "majeure", length = 100)
     private String majeure = "Digital Transformation";
@@ -61,7 +61,7 @@ public class Apprenti {
     @JoinColumn(name = "maitre_apprentissage_id")
     private MaitreApprentissage maitreApprentissage;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "mission_id")
     private Mission mission;
 

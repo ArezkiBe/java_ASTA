@@ -220,20 +220,38 @@
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-12">
-                                <label class="form-label text-muted">Mission actuelle</label>
-                                <div th:if="${apprenti.mission != null}">
-                                    <p class="fw-bold mb-1" th:text="${apprenti.mission.metierCible}">Développement application web</p>
-                                    <p class="text-muted small" th:if="${apprenti.mission.motsCles != null}" 
-                                       th:text="${apprenti.mission.motsCles}">Mots-clés de la mission...</p>
-                                    <p class="small" th:if="${apprenti.mission.commentaires != null}" 
-                                       th:text="${apprenti.mission.commentaires}">Commentaires de la mission...</p>
-                                    <p class="small">
-                                        <span class="badge bg-primary" th:if="${apprenti.mission.motsCles != null}" 
-                                              th:text="${apprenti.mission.motsCles}">Java, Spring Boot, React</span>
-                                    </p>
+                                <label class="form-label text-muted">
+                                    <i class="fas fa-briefcase me-1"></i>Mission en entreprise
+                                </label>
+                                <div th:if="${apprenti.mission != null and (!#strings.isEmpty(apprenti.mission.metierCible) or !#strings.isEmpty(apprenti.mission.motsCles) or !#strings.isEmpty(apprenti.mission.commentaires))}">
+                                    <!-- Métier cible -->
+                                    <div th:if="${!#strings.isEmpty(apprenti.mission.metierCible)}" class="mb-2">
+                                        <small class="text-muted">Métier cible :</small>
+                                        <p class="fw-bold mb-1" th:text="${apprenti.mission.metierCible}">Développeur Full-Stack</p>
+                                    </div>
+                                    
+                                    <!-- Mots-clés -->
+                                    <div th:if="${!#strings.isEmpty(apprenti.mission.motsCles)}" class="mb-2">
+                                        <small class="text-muted">Mots-clés :</small>
+                                        <div>
+                                            <span class="badge bg-primary me-1" 
+                                                  th:each="motCle : ${#strings.arraySplit(apprenti.mission.motsCles, ',')}" 
+                                                  th:text="${#strings.trim(motCle)}">Java</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Commentaires -->
+                                    <div th:if="${!#strings.isEmpty(apprenti.mission.commentaires)}" class="mb-2">
+                                        <small class="text-muted">Description :</small>
+                                        <div class="bg-light p-2 rounded border">
+                                            <p class="mb-0 small" th:text="${apprenti.mission.commentaires}">
+                                                Description de la mission...
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p class="text-muted fst-italic" th:unless="${apprenti.mission != null}">
-                                    <i class="fas fa-minus"></i> Aucune mission assignée
+                                <p class="text-muted fst-italic" th:unless="${apprenti.mission != null and (!#strings.isEmpty(apprenti.mission.metierCible) or !#strings.isEmpty(apprenti.mission.motsCles) or !#strings.isEmpty(apprenti.mission.commentaires))}">
+                                    <i class="fas fa-minus"></i> Aucune mission renseignée
                                 </p>
                             </div>
                             <div class="col-12">

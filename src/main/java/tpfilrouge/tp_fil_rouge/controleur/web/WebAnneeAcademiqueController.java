@@ -57,16 +57,16 @@ public class WebAnneeAcademiqueController {
             model.addAttribute("anneeSuivante", anneeSuivante);
             
             // Statistiques des apprentis par programme
-            long nombreL1 = apprentiService.compterApprentisByProgramme("L1");
-            long nombreL2 = apprentiService.compterApprentisByProgramme("L2");
-            long nombreL3 = apprentiService.compterApprentisByProgramme("L3");
+            long nombreI1 = apprentiService.compterApprentisByProgramme("I1");
+            long nombreI2 = apprentiService.compterApprentisByProgramme("I2");
+            long nombreI3 = apprentiService.compterApprentisByProgramme("I3");
             
-            model.addAttribute("nombreL1", nombreL1);
-            model.addAttribute("nombreL2", nombreL2);
-            model.addAttribute("nombreL3", nombreL3);
+            model.addAttribute("nombreI1", nombreI1);
+            model.addAttribute("nombreI2", nombreI2);
+            model.addAttribute("nombreI3", nombreI3);
             
-            logger.info("Statistiques chargées : L1={}, L2={}, L3={}", 
-                       nombreL1, nombreL2, nombreL3);
+            logger.info("Statistiques chargées : I1={}, I2={}, I3={}", 
+                       nombreI1, nombreI2, nombreI3);
             
         } catch (Exception e) {
             logger.error("Erreur lors du chargement des années académiques", e);
@@ -88,7 +88,7 @@ public class WebAnneeAcademiqueController {
             logger.info(" Promotion automatique terminée avec succès vers {}", nouvelleAnnee);
             redirectAttributes.addFlashAttribute("message", 
                 " Promotion Automatique Réussie vers " + nouvelleAnnee + " !\n" +
-                " Tous les apprentis ont été promus (L1→L2, L2→L3, L3→Diplômés)\n" +
+                " Tous les apprentis ont été promus (I1→I2, I2→I3, I3→Diplômés)\n" +
                 " Nouvelle année définie comme courante");
             
         } catch (RuntimeException e) {

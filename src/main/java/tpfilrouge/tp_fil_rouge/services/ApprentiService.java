@@ -155,7 +155,7 @@ public class ApprentiService {
                 nouvelApprenti.setNom(nom);
                 nouvelApprenti.setPrenom(prenom);
                 nouvelApprenti.setEmail(email);
-                nouvelApprenti.setProgramme("L1");
+                nouvelApprenti.setProgramme("I1");
                 nouvelApprenti.setMajeure("Digital Transformation");
                 nouvelApprenti.setEstArchive(false);
                 nouvelApprenti.setAnneeAcademique(anneeCourante);
@@ -210,17 +210,17 @@ public class ApprentiService {
             String programme = apprenti.getProgramme();
 
             switch (programme) {
-                case "L1":
-                    apprenti.setProgramme("L2");
+                case "I1":
+                    apprenti.setProgramme("I2");
                     apprenti.setAnneeAcademique(nouvelleAnnee);
                     promusI1I2++;
                     break;
-                case "L2":
-                    apprenti.setProgramme("L3");
+                case "I2":
+                    apprenti.setProgramme("I3");
                     apprenti.setAnneeAcademique(nouvelleAnnee);
                     promusI2I3++;
                     break;
-                case "L3":
+                case "I3":
                     apprenti.setEstArchive(true);
                     archivesI3++;
                     break;
@@ -236,7 +236,7 @@ public class ApprentiService {
 
         // Créer un rapport de la promotion
         return String.format(
-            "Promotion terminée : %d L1→L2, %d L2→L3, %d L3 archivés, %d autres programmes transférés",
+            "Promotion terminée : %d I1→I2, %d I2→I3, %d I3 archivés, %d autres programmes transférés",
             promusI1I2, promusI2I3, archivesI3, autresProgrammes
         );
     }

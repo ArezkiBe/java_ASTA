@@ -69,6 +69,14 @@
                     <!-- Champ caché pour l'ID en mode modification -->
                     <input th:if="${modeModification}" type="hidden" th:field="*{id}" />
                     
+                    <!-- Message informatif -->
+                    <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <div>
+                            <strong>Information :</strong> L'année académique est automatiquement assignée à l'année courante pour tous les apprentis.
+                        </div>
+                    </div>
+                    
                     <!-- Informations personnelles -->
                     <div class="card shadow-sm mb-4">
                         <div class="card-header bg-primary text-white">
@@ -174,9 +182,9 @@
                                                 required
                                                 th:classappend="${#fields.hasErrors('programme')} ? 'is-invalid' : ''">
                                             <option value="">Choisissez un programme...</option>
-                                            <option value="L1">L1 - Première année</option>
-                                            <option value="L2">L2 - Deuxième année</option>
-                                            <option value="L3">L3 - Troisième année</option>
+                                            <option value="I1">I1 - Première année</option>
+                                            <option value="I2">I2 - Deuxième année</option>
+                                            <option value="I3">I3 - Troisième année</option>
                                         </select>
                                         <label for="programme">Programme d'études *</label>
                                         <div th:if="${#fields.hasErrors('programme')}" class="invalid-feedback">
@@ -208,28 +216,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Année académique -->
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <select th:field="*{anneeAcademique.id}" 
-                                                class="form-select" 
-                                                id="anneeAcademique"
-                                                required
-                                                th:classappend="${#fields.hasErrors('anneeAcademique')} ? 'is-invalid' : ''">
-                                            <option value="">Choisissez une année...</option>
-                                            <option th:each="annee : ${annees}" 
-                                                    th:value="${annee.id}" 
-                                                    th:text="${annee.annee + (annee.estCourante ? ' (Courante)' : '')}"
-                                                    th:selected="${apprenti.anneeAcademique != null and apprenti.anneeAcademique.id == annee.id}">
-                                                2024-2025 (Courante)
-                                            </option>
-                                        </select>
-                                        <label for="anneeAcademique">Année académique *</label>
-                                        <div th:if="${#fields.hasErrors('anneeAcademique')}" class="invalid-feedback">
-                                            <span th:errors="*{anneeAcademique}">Erreur année</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <!-- L'année académique est automatiquement assignée côté serveur -->
 
                                 <!-- Statut archivé (seulement en modification) -->
                                 <div class="col-md-6" th:if="${modeModification}">
@@ -318,6 +305,78 @@
                                         <label for="feedbackTuteur">Feedback du tuteur enseignant</label>
                                         <div th:if="${#fields.hasErrors('feedbackTuteurEnseignant')}" class="invalid-feedback">
                                             <span th:errors="*{feedbackTuteurEnseignant}">Erreur feedback</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informations de la Mission -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-briefcase me-2"></i>Mission en entreprise
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <!-- Mots clés -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input th:field="*{mission.motsCles}" 
+                                               type="text" 
+                                               class="form-control" 
+                                               id="missionMotsCles" 
+                                               placeholder="Développement, Java, Spring..."
+                                               maxlength="200"
+                                               th:classappend="${#fields.hasErrors('mission.motsCles')} ? 'is-invalid' : ''">
+                                        <label for="missionMotsCles">Mots-clés de la mission</label>
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>Séparez les mots-clés par des virgules
+                                        </div>
+                                        <div th:if="${#fields.hasErrors('mission.motsCles')}" class="invalid-feedback">
+                                            <span th:errors="*{mission.motsCles}">Erreur mots-clés</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Métier cible -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input th:field="*{mission.metierCible}" 
+                                               type="text" 
+                                               class="form-control" 
+                                               id="missionMetier" 
+                                               placeholder="Développeur Full-Stack..."
+                                               maxlength="100"
+                                               th:classappend="${#fields.hasErrors('mission.metierCible')} ? 'is-invalid' : ''">
+                                        <label for="missionMetier">Métier cible</label>
+                                        <div class="form-text">
+                                            <i class="fas fa-target me-1"></i>Le métier visé par cette mission
+                                        </div>
+                                        <div th:if="${#fields.hasErrors('mission.metierCible')}" class="invalid-feedback">
+                                            <span th:errors="*{mission.metierCible}">Erreur métier cible</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Commentaires sur la mission -->
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <textarea th:field="*{mission.commentaires}" 
+                                                  class="form-control" 
+                                                  id="missionCommentaires" 
+                                                  placeholder="Décrivez les objectifs, les tâches principales..."
+                                                  style="height: 120px"
+                                                  maxlength="500"
+                                                  th:classappend="${#fields.hasErrors('mission.commentaires')} ? 'is-invalid' : ''"></textarea>
+                                        <label for="missionCommentaires">Commentaires sur la mission</label>
+                                        <div class="form-text">
+                                            <i class="fas fa-comment me-1"></i>Décription détaillée de la mission (objectifs, tâches, etc.)
+                                        </div>
+                                        <div th:if="${#fields.hasErrors('mission.commentaires')}" class="invalid-feedback">
+                                            <span th:errors="*{mission.commentaires}">Erreur commentaires</span>
                                         </div>
                                     </div>
                                 </div>

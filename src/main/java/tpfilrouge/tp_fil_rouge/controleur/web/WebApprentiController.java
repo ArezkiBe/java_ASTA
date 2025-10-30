@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import tpfilrouge.tp_fil_rouge.exceptions.ApprentiNonTrouveException;
 import tpfilrouge.tp_fil_rouge.modele.entite.Apprenti;
+import tpfilrouge.tp_fil_rouge.modele.entite.AnneeAcademique;
 import tpfilrouge.tp_fil_rouge.modele.entite.TuteurEnseignant;
 import tpfilrouge.tp_fil_rouge.services.ApprentiService;
 import tpfilrouge.tp_fil_rouge.services.EntrepriseService;
@@ -40,7 +41,6 @@ public class WebApprentiController {
     private static final String ATTR_APPRENTI = "apprenti";
     private static final String ATTR_ENTREPRISES = "entreprises";
     private static final String ATTR_MAITRES = "maitres";
-    private static final String ATTR_ANNEES = "annees";
     private static final String ATTR_MESSAGE = "message";
     private static final String ATTR_ERREUR = "erreur";
     
@@ -156,14 +156,14 @@ public class WebApprentiController {
         
         try {
             Apprenti apprenti = apprentiService.getApprentiById(id);
+            // Initialiser une mission vide si elle n'existe pas
+            if (apprenti.getMission() == null) {
+                apprenti.setMission(new tpfilrouge.tp_fil_rouge.modele.entite.Mission());
+            }
             model.addAttribute(ATTR_APPRENTI, apprenti);
             
             // Charger les données nécessaires pour les listes déroulantes
-            model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getAllEntreprises());
-            model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getAllMaitres());
-            model.addAttribute(ATTR_ANNEES, anneeAcademiqueService.getAllAnnees());
-            
-            model.addAttribute("modeModification", true);
+            prepareFormModel(model, true);
             
             return VUE_FORMULAIRE;
             
@@ -192,10 +192,7 @@ public class WebApprentiController {
             logger.warn("Erreurs de validation lors de la modification de l'apprenti ID: {}", id);
             
             // Recharger les données pour le formulaire
-            model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getAllEntreprises());
-            model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getAllMaitres());
-            model.addAttribute(ATTR_ANNEES, anneeAcademiqueService.getAllAnnees());
-            model.addAttribute("modeModification", true);
+            prepareFormModel(model, true);
             model.addAttribute(ATTR_ERREUR, "Veuillez corriger les erreurs dans le formulaire");
             
             return VUE_FORMULAIRE;
@@ -206,9 +203,6 @@ public class WebApprentiController {
             Apprenti apprentiExistant = apprentiService.getApprentiById(id);
             
             // Reconstituer les entités à partir des IDs du formulaire
-            if (apprenti.getAnneeAcademique() != null && apprenti.getAnneeAcademique().getId() != null) {
-                apprenti.setAnneeAcademique(anneeAcademiqueService.getAnneeById(apprenti.getAnneeAcademique().getId()).orElse(null));
-            }
             if (apprenti.getEntreprise() != null && apprenti.getEntreprise().getId() != null) {
                 apprenti.setEntreprise(entrepriseService.getEntrepriseById(apprenti.getEntreprise().getId()).orElse(null));
             }
@@ -218,6 +212,18 @@ public class WebApprentiController {
             
             // Conserver le tuteur enseignant existant
             apprenti.setTuteurEnseignant(apprentiExistant.getTuteurEnseignant());
+            
+            // Forcer l'assignation à l'année académique courante (sécurité)
+            AnneeAcademique anneeCourante = anneeAcademiqueService.getAnneeCourante()
+                .orElseThrow(() -> new RuntimeException("Aucune année académique courante définie"));
+            apprenti.setAnneeAcademique(anneeCourante);
+            logger.info("Modification forcée vers l'année académique courante: {}", anneeCourante.getAnnee());
+            
+            // Gérer la mission : si elle est vide, ne pas la sauvegarder
+            if (isMissionVide(apprenti.getMission())) {
+                apprenti.setMission(null);
+                logger.debug("Mission vide détectée, non sauvegardée pour l'apprenti ID: {}", id);
+            }
             
             // Appliquer la modification
             Apprenti apprentiModifie = apprentiService.updateApprenti(id, apprenti);
@@ -248,14 +254,12 @@ public class WebApprentiController {
         
         // Créer un apprenti vide pour le formulaire
         Apprenti nouvelApprenti = new Apprenti();
+        // Initialiser une mission vide pour éviter les erreurs de binding
+        nouvelApprenti.setMission(new tpfilrouge.tp_fil_rouge.modele.entite.Mission());
         model.addAttribute(ATTR_APPRENTI, nouvelApprenti);
         
         // Charger les données nécessaires
-        model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getAllEntreprises());
-        model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getAllMaitres());
-        model.addAttribute(ATTR_ANNEES, anneeAcademiqueService.getAllAnnees());
-        
-        model.addAttribute("modeModification", false);
+        prepareFormModel(model, false);
         
         return VUE_FORMULAIRE;
     }
@@ -275,10 +279,7 @@ public class WebApprentiController {
         if (result.hasErrors()) {
             logger.warn("Erreurs de validation lors de l'ajout de l'apprenti {} {}", apprenti.getPrenom(), apprenti.getNom());
             
-            model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getAllEntreprises());
-            model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getAllMaitres());
-            model.addAttribute(ATTR_ANNEES, anneeAcademiqueService.getAllAnnees());
-            model.addAttribute("modeModification", false);
+            prepareFormModel(model, false);
             model.addAttribute(ATTR_ERREUR, "Veuillez corriger les erreurs dans le formulaire");
             
             return VUE_FORMULAIRE;
@@ -289,10 +290,7 @@ public class WebApprentiController {
             if (apprentiService.existsByEmail(apprenti.getEmail())) {
                 logger.warn("Tentative d'ajout d'un apprenti avec un email déjà existant: {}", apprenti.getEmail());
                 
-                model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getAllEntreprises());
-                model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getAllMaitres());
-                model.addAttribute(ATTR_ANNEES, anneeAcademiqueService.getAllAnnees());
-                model.addAttribute("modeModification", false);
+                prepareFormModel(model, false);
                 model.addAttribute(ATTR_ERREUR, "Un apprenti avec cet email existe déjà");
                 
                 return VUE_FORMULAIRE;
@@ -302,10 +300,7 @@ public class WebApprentiController {
             TuteurEnseignant tuteurConnecte = getTuteurConnecte();
             if (tuteurConnecte == null) {
                 logger.error("Impossible de trouver le tuteur enseignant connecté");
-                model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getAllEntreprises());
-                model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getAllMaitres());
-                model.addAttribute(ATTR_ANNEES, anneeAcademiqueService.getAllAnnees());
-                model.addAttribute("modeModification", false);
+                prepareFormModel(model, false);
                 model.addAttribute(ATTR_ERREUR, "Erreur : impossible de déterminer le tuteur enseignant");
                 
                 return VUE_FORMULAIRE;
@@ -314,6 +309,18 @@ public class WebApprentiController {
             apprenti.setTuteurEnseignant(tuteurConnecte);
             logger.info("Assignation du tuteur enseignant {} {} à l'apprenti", 
                        tuteurConnecte.getPrenom(), tuteurConnecte.getNom());
+            
+            // Forcer l'assignation à l'année académique courante
+            AnneeAcademique anneeCourante = anneeAcademiqueService.getAnneeCourante()
+                .orElseThrow(() -> new RuntimeException("Aucune année académique courante définie"));
+            apprenti.setAnneeAcademique(anneeCourante);
+            logger.info("Assignation de l'apprenti à l'année académique courante: {}", anneeCourante.getAnnee());
+            
+            // Gérer la mission : si elle est vide, ne pas la sauvegarder
+            if (isMissionVide(apprenti.getMission())) {
+                apprenti.setMission(null);
+                logger.debug("Mission vide détectée, non sauvegardée pour l'apprenti");
+            }
             
             // Créer l'apprenti
             Apprenti nouvelApprenti = apprentiService.createApprenti(apprenti);
@@ -391,6 +398,32 @@ public class WebApprentiController {
         return REDIRECT_LISTE;
     }
     
+    /**
+     * Prépare le modèle avec les données nécessaires pour le formulaire
+     */
+    private void prepareFormModel(Model model, boolean modeModification) {
+        model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getAllEntreprises());
+        model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getAllMaitres());
+        model.addAttribute("modeModification", modeModification);
+    }
+
+    /**
+     * Vérifie si une mission est vide (tous les champs vides ou null)
+     * @param mission la mission à vérifier
+     * @return true si la mission est vide, false sinon
+     */
+    private boolean isMissionVide(tpfilrouge.tp_fil_rouge.modele.entite.Mission mission) {
+        if (mission == null) {
+            return true;
+        }
+        
+        boolean motsClesVide = mission.getMotsCles() == null || mission.getMotsCles().trim().isEmpty();
+        boolean metierCibleVide = mission.getMetierCible() == null || mission.getMetierCible().trim().isEmpty();
+        boolean commentairesVide = mission.getCommentaires() == null || mission.getCommentaires().trim().isEmpty();
+        
+        return motsClesVide && metierCibleVide && commentairesVide;
+    }
+
     /**
      * Récupère le tuteur enseignant connecté depuis le contexte de sécurité Spring
      * @return TuteurEnseignant connecté ou null si non trouvé
