@@ -30,6 +30,9 @@ public class TuteurEnseignant {
     @Column(name = "prenom", nullable = false, length = 100)
     private String prenom;
 
+    @Column(name = "doit_changer_identifiants", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean doitChangerIdentifiants = false;
+
     @OneToMany(mappedBy = "tuteurEnseignant", fetch = FetchType.LAZY)
     private List<Apprenti> apprentisSuivis;
 

@@ -4,51 +4,27 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import tpfilrouge.tp_fil_rouge.modele.entite.Utilisateur;
-import tpfilrouge.tp_fil_rouge.modele.repository.UtilisateurRepository;
+import tpfilrouge.tp_fil_rouge.modele.entite.TuteurEnseignant;
+import tpfilrouge.tp_fil_rouge.modele.repository.TuteurEnseignantRepository;
 
 @Configuration
 public class DataInitializer {
 
     @Bean
-    public CommandLineRunner initUsers(UtilisateurRepository utilisateurRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initUsers(TuteurEnseignantRepository tuteurRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            // Créer l'utilisateur admin
-            String adminUsername = "admin";
-            if (utilisateurRepository.findByUsername(adminUsername).isEmpty()) {
-                Utilisateur admin = new Utilisateur();
-                admin.setUsername(adminUsername);
-                admin.setPassword(passwordEncoder.encode("admin"));
-                admin.setRoles("ROLE_ADMIN,ROLE_USER");
-                admin.setPrenom("SuperAdmin");
-                admin.setActif(true);
-                utilisateurRepository.save(admin);
-                System.out.println("Utilisateur admin créé en base (admin/admin)");
-            }
-            
-            // Créer les comptes utilisateurs pour les tuteurs enseignants
-            String[][] tuteurs = {
-                {"prof.martin", "Jean-Claude"},
-                {"prof.bernard", "Sylvie"},
-                {"prof.dubois", "Philippe"}, 
-                {"prof.moreau", "Catherine"},
-                {"prof.simon", "François"}
-            };
-            
-            for (String[] tuteur : tuteurs) {
-                String login = tuteur[0];
-                String prenom = tuteur[1];
-                
-                if (utilisateurRepository.findByUsername(login).isEmpty()) {
-                    Utilisateur utilisateurTuteur = new Utilisateur();
-                    utilisateurTuteur.setUsername(login);
-                    utilisateurTuteur.setPassword(passwordEncoder.encode("password123")); // Même mot de passe que dans la base tuteur
-                    utilisateurTuteur.setRoles("ROLE_TUTEUR,ROLE_USER");
-                    utilisateurTuteur.setPrenom(prenom);
-                    utilisateurTuteur.setActif(true);
-                    utilisateurRepository.save(utilisateurTuteur);
-                    System.out.println("Utilisateur tuteur créé : " + login + " / password123");
-                }
+            // Créer uniquement l'utilisateur admin générique à la première initialisation
+            String adminLogin = "admin";
+            if (!tuteurRepository.existsByLogin(adminLogin)) {
+                TuteurEnseignant admin = new TuteurEnseignant();
+                admin.setLogin(adminLogin);
+                admin.setMotDePasse(passwordEncoder.encode("admin"));
+                admin.setNom("Administrateur");
+                admin.setPrenom("Système");
+                admin.setDoitChangerIdentifiants(true); // Forcer le changement à la première connexion
+                tuteurRepository.save(admin);
+                System.out.println("Utilisateur admin générique créé (admin/admin)");
+                System.out.println("ATTENTION : Vous devez changer vos identifiants à la première connexion !");
             }
         };
     }

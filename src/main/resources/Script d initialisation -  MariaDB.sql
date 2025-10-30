@@ -9,7 +9,8 @@ CREATE TABLE tuteur_enseignant (
     login VARCHAR(50) NOT NULL UNIQUE,
     mot_de_passe VARCHAR(100) NOT NULL,
     nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL
+    prenom VARCHAR(100) NOT NULL,
+    doit_changer_identifiants TINYINT(1) NOT NULL DEFAULT 0
 );
 
 CREATE TABLE entreprise (
@@ -86,34 +87,22 @@ CREATE TABLE evaluation (
     FOREIGN KEY (apprenti_id) REFERENCES apprenti(id)
 );
 
--- Table utilisateur : stocke les identifiants pour l'authentification
-CREATE TABLE IF NOT EXISTS utilisateur (
-    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    roles VARCHAR(255), -- ex: 'ROLE_USER,ROLE_ADMIN'
-    prenom VARCHAR(100),
-    actif TINYINT(1) DEFAULT 1,
-    must_change_password TINYINT(1) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- ====================================================================
+-- SYSTÈME D'AUTHENTIFICATION : L'authentification se fait désormais via la table tuteur_enseignant
+-- Plus besoin de table utilisateur séparée
+-- ====================================================================
 
--- Utilisateur admin par défaut pour les tests
--- Mot de passe : "admin123" (hashé avec BCrypt)
-INSERT INTO utilisateur (username, password, roles, prenom, actif, must_change_password) VALUES
-('admin', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'ROLE_ADMIN,ROLE_USER', 'Administrateur', 1, 0),
-('user', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'ROLE_USER', 'Utilisateur', 1, 0);
-
--- Table password_reset_token : stocke les tokens de réinitialisation
+-- Table password_reset_token : stocke les tokens de réinitialisation (pour usage futur)
 CREATE TABLE IF NOT EXISTS password_reset_token (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     token VARCHAR(255) NOT NULL UNIQUE,
-    utilisateur_id BIGINT NOT NULL,
+    tuteur_id INT NOT NULL,
     expiry_date DATETIME NOT NULL,
-    CONSTRAINT fk_prt_user FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id) ON DELETE CASCADE
+    CONSTRAINT fk_prt_tuteur FOREIGN KEY (tuteur_id) REFERENCES tuteur_enseignant(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Exemple d'insertion commentée (à utiliser uniquement pour tests ; le token doit être généré côté application):
--- INSERT INTO password_reset_token (token, utilisateur_id, expiry_date) VALUES
+-- INSERT INTO password_reset_token (token, tuteur_id, expiry_date) VALUES
 -- ('UUID_TOKEN_EXEMPLE', 1, DATE_ADD(NOW(), INTERVAL 2 HOUR));
 
 -- ====================================================================
@@ -198,12 +187,13 @@ INSERT INTO entreprise (raison_sociale, adresse, informations_utiles_acces_locau
 
 -- Insertion de tuteurs enseignants pour les tests
 -- Note: Mot de passe hashé avec BCrypt pour "password123"
-INSERT INTO tuteur_enseignant (login, mot_de_passe, nom, prenom) VALUES
-('prof.martin', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'Martin', 'Jean-Claude'),
-('prof.bernard', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'Bernard', 'Sylvie'),
-('prof.dubois', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'Dubois', 'Philippe'),
-('prof.moreau', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'Moreau', 'Catherine'),
-('prof.simon', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'Simon', 'François');
+-- L'utilisateur admin sera créé automatiquement par l'application au démarrage
+INSERT INTO tuteur_enseignant (login, mot_de_passe, nom, prenom, doit_changer_identifiants) VALUES
+('prof.martin', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'Martin', 'Jean-Claude', 0),
+('prof.bernard', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'Bernard', 'Sylvie', 0),
+('prof.dubois', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'Dubois', 'Philippe', 0),
+('prof.moreau', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'Moreau', 'Catherine', 0),
+('prof.simon', '$2a$10$EQA1WZLF7M7s.Qr9CqQWD.1PtV9b9L3lYi3XxJ7g9d.ZuKqI6WUI.', 'Simon', 'François', 0);
 
 -- ====================================================================
 -- DONNÉES DE TEST : MAÎTRES D'APPRENTISSAGE

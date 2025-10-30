@@ -1,13 +1,11 @@
 package tpfilrouge.tp_fil_rouge.controleur;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import tpfilrouge.tp_fil_rouge.modele.entite.Utilisateur;
-import tpfilrouge.tp_fil_rouge.modele.repository.UtilisateurRepository;
+import tpfilrouge.tp_fil_rouge.security.CustomUserDetails;
 
 /**
  * Contrôleur d'authentification simplifié
@@ -15,13 +13,6 @@ import tpfilrouge.tp_fil_rouge.modele.repository.UtilisateurRepository;
  */
 @Controller
 public class AuthController {
-
-    private final UtilisateurRepository utilisateurRepository;
-
-    @Autowired
-    public AuthController(UtilisateurRepository utilisateurRepository) {
-        this.utilisateurRepository = utilisateurRepository;
-    }
 
     /**
      * 1.1 & 1.2 - Page de connexion avec réaffichage en cas d'erreur
@@ -39,11 +30,17 @@ public class AuthController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
-            // Récupérer les informations de l'utilisateur connecté
-            Utilisateur utilisateur = utilisateurRepository.findByUsername(auth.getName()).orElse(null);
-            if (utilisateur != null) {
-                model.addAttribute("prenom", utilisateur.getPrenom());
-                model.addAttribute("username", utilisateur.getUsername());
+            // Vérifier si l'utilisateur doit changer ses identifiants
+            if (auth.getPrincipal() instanceof CustomUserDetails) {
+                CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+                
+                if (userDetails.mustChangeCredentials()) {
+                    // Rediriger vers la page de changement d'identifiants
+                    return "redirect:/change-credentials";
+                }
+                
+                model.addAttribute("prenom", userDetails.getPrenom());
+                model.addAttribute("username", userDetails.getUsername());
             }
         }
 
